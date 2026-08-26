@@ -93,11 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Wake Lock para manter a tela acesa durante o treino
     async function requestWakeLock() {
         try {
-            if ('wakeLock' in navigator) {
+            if ('wakeLock' in navigator && document.visibilityState === 'visible') {
                 wakeLock = await navigator.wakeLock.request('screen');
             }
         } catch (err) {
-            console.log('Wake Lock não suportado ou bloqueado:', err);
+            // Silencioso se bloqueado pelo navegador
         }
     }
 

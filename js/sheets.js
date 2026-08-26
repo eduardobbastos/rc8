@@ -107,8 +107,8 @@ const SheetsManager = {
         }
 
         if (fileId) {
-            // URL de download direto oficial do Google Drive que toca direto na tag <audio> sem bloquear CORS
-            return `https://drive.usercontent.google.com/download?id=${fileId}&export=download`;
+            // URL de download direto e streaming do Google Drive
+            return `https://drive.google.com/uc?export=download&id=${fileId}`;
         }
 
         return url;

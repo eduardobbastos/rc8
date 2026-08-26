@@ -67,20 +67,31 @@ class RC8Player {
             }
         });
 
+        this.isErrorRecovering = false;
+
         this.audio.addEventListener('error', (e) => {
-            console.warn('Erro ao reproduzir faixa atual:', this.getCurrentTrack(), e);
+            const track = this.getCurrentTrack();
+            console.warn('Falha na reprodução da faixa:', track?.title);
+            
+            this.isPlaying = false;
+            if (this.visualizer) this.visualizer.stop();
+            if (this.onPlayStateChange) this.onPlayStateChange(false);
+
             if (this.onError) {
                 this.onError({
-                    track: this.getCurrentTrack(),
+                    track: track,
                     error: e
                 });
             }
-            // Tenta avançar suavemente após 2s se houver erro
-            setTimeout(() => {
-                if (this.isPlaying) {
-                    this.next(true);
-                }
-            }, 2000);
+
+            // Só avança para a próxima se houver mais de uma música na playlist
+            if (this.playlist.length > 1 && !this.isErrorRecovering) {
+                this.isErrorRecovering = true;
+                setTimeout(() => {
+                    this.isErrorRecovering = false;
+                    this.next(false);
+                }, 3000);
+            }
         });
     }
 
