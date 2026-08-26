@@ -36,6 +36,11 @@ def get_sheet_data():
 def baixar_musica(youtube_url, titulo_custom=None):
     ydl_opts = {
         'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
         'outtmpl': os.path.join(OUTPUT_DIR, '%(title)s.%(ext)s'),
         'noplaylist': True,
         'quiet': False,
@@ -45,11 +50,13 @@ def baixar_musica(youtube_url, titulo_custom=None):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             info = ydl.extract_info(youtube_url, download=True)
-            filename = ydl.prepare_filename(info)
-            print(f"✅ Download concluído: {os.path.basename(filename)}")
-            return filename
+            # Nome do arquivo MP3 final convertido
+            base_name = ydl.prepare_filename(info)
+            mp3_name = os.path.splitext(base_name)[0] + '.mp3'
+            print(f"✅ Áudio MP3 gerado com sucesso: {os.path.basename(mp3_name)}")
+            return mp3_name
         except Exception as err:
-            print(f"❌ Erro ao baixar {youtube_url}: {err}")
+            print(f"❌ Erro ao baixar áudio de {youtube_url}: {err}")
             return None
 
 def main():
