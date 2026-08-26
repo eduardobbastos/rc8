@@ -272,34 +272,37 @@ const SheetsManager = {
         for (let i = 1; i < lines.length; i++) {
             const r = lines[i];
             
-            // Escolhe a melhor URL disponível (Drive > Generic > YouTube)
-            let rawUrl = '';
-            if (driveUrlIdx !== -1 && r[driveUrlIdx] && r[driveUrlIdx].startsWith('http')) {
-                rawUrl = r[driveUrlIdx];
-            } else if (genericUrlIdx !== -1 && r[genericUrlIdx] && r[genericUrlIdx].startsWith('http')) {
-                rawUrl = r[genericUrlIdx];
-            } else if (youtubeUrlIdx !== -1 && r[youtubeUrlIdx] && r[youtubeUrlIdx].startsWith('http')) {
-                rawUrl = r[youtubeUrlIdx];
-            } else {
-                const foundUrl = r.find(col => col.startsWith('http') || col.includes('drive.google.com') || /^[a-zA-Z0-9-_]{25,}$/.test(col));
-                if (foundUrl) rawUrl = foundUrl;
+            // Prioridade total para o arquivo da coluna Link_Google_Drive
+            let driveRawUrl = (driveUrlIdx !== -1 && r[driveUrlIdx]) ? r[driveUrlIdx].trim() : '';
+            let youtubeRawUrl = (youtubeUrlIdx !== -1 && r[youtubeUrlIdx]) ? r[youtubeUrlIdx].trim() : '';
+            
+            // Extrai ID do Google Drive da coluna Link_Google_Drive
+            let driveFileId = '';
+            if (driveRawUrl) {
+                const matchDrive = driveRawUrl.match(/\/file\/d\/([a-zA-Z0-9-_]+)/) || driveRawUrl.match(/[?&]id=([a-zA-Z0-9-_]+)/) || driveRawUrl.match(/([a-zA-Z0-9-_]{25,})/);
+                if (matchDrive) {
+                    driveFileId = matchDrive[1];
+                }
             }
 
-            // Extrai ID do YouTube se presente
+            // Extrai ID do YouTube da coluna Link_YouTube
             let youtubeId = '';
-            const ytSearchStr = (youtubeUrlIdx !== -1 && r[youtubeUrlIdx]) ? r[youtubeUrlIdx] : rawUrl;
-            const ytMatch = ytSearchStr.match(/(?:v=|\/embed\/|\/watch\?v=|\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-            if (ytMatch) {
-                youtubeId = ytMatch[1];
+            if (youtubeRawUrl) {
+                const ytMatch = youtubeRawUrl.match(/(?:v=|\/embed\/|\/watch\?v=|\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                if (ytMatch) {
+                    youtubeId = ytMatch[1];
+                }
             }
 
-            const streamUrl = this.convertGoogleDriveLink(rawUrl);
+            // URL principal de stream (Google Drive oficial)
+            const streamUrl = driveFileId ? `https://drive.usercontent.google.com/download?id=${driveFileId}&export=download` : (driveRawUrl || youtubeRawUrl);
+            
             const title = (titleIdx !== -1 && r[titleIdx]) ? r[titleIdx] : `Faixa #${i}`;
             const artist = (artistIdx !== -1 && r[artistIdx]) ? r[artistIdx] : 'Turma das 8h';
             const bpm = (bpmIdx !== -1 && r[bpmIdx]) ? parseInt(r[bpmIdx], 10) || 140 : 138;
             const genre = (genreIdx !== -1 && r[genreIdx]) ? r[genreIdx] : 'Workout Rock';
             
-            // Se tiver YouTube ID, usa a capa oficial do clipe em HD
+            // Capa oficial
             let cover = this.getDynamicCover(i);
             if (coverIdx !== -1 && r[coverIdx] && r[coverIdx].startsWith('http')) {
                 cover = r[coverIdx];
@@ -314,13 +317,16 @@ const SheetsManager = {
                 title,
                 artist,
                 url: streamUrl,
+                driveFileId,
+                driveUrl: driveRawUrl,
+                driveStreamUrl: streamUrl,
                 youtubeId,
                 youtubeUrl: youtubeId ? `https://www.youtube.com/watch?v=${youtubeId}` : '',
                 bpm,
                 genre,
                 cover,
                 dedication,
-                rawDriveUrl: rawUrl
+                rawDriveUrl: driveRawUrl
             });
         }
 
