@@ -1,0 +1,49 @@
+============================================================
+[2026-08-26 11:45:59] 🔄 Iniciando sincronização via Crontab...
+============================================================
+📻 RC8 - SINCRONIZADOR DE MÚSICAS & METADADOS (GITHUB AUDIO)
+============================================================
+📁 Pasta de Áudio: /home/ebastos/cr8/audio
+📄 Arquivo de Metadados: /home/ebastos/cr8/data/playlist.json
+📊 Planilha Oficial: https://docs.google.com/spreadsheets/d/15ajmPTWT7Rz0TIOet-K8RCzHphrnAEYjpOeBWhuvFqY
+
+📋 Cabeçalhos detectados: ['link_youtube', 'titulo', 'artista', 'bpm']
+⚡ [1] Áudio já existente em audio/: The Offspring - The Kids Aren't Alright.mp3
+⚡ [2] Áudio já existente em audio/: The Offspring - Pretty Fly (For A White Guy) (Official Music Video).mp3
+⚡ [3] Áudio já existente em audio/: Sapão - Vou Desafiar Você (Clipe Oficial).mp3
+⚡ [4] Áudio já existente em audio/: Dr. Dre - Still D.R.E. ft. Snoop Dogg.mp3
+⚡ [5] Áudio já existente em audio/: Eminem - Till I Collapse.mp3
+
+============================================================
+🎉 SUCESSO! 5 faixas sincronizadas no arquivo:
+📄 /home/ebastos/cr8/data/playlist.json
+============================================================
+[2026-08-26 11:46:02] ✨ Nenhuma música nova. Tudo já está 100% atualizado.
+============================================================
+============================================================
+[2026-08-26 11:50:22] 🔄 Iniciando sincronização via Crontab...
+============================================================
+📻 RC8 - SINCRONIZADOR INTELIGENTE DE MÚSICAS (GITHUB AUDIO)
+============================================================
+📁 Pasta de Áudio: /home/ebastos/cr8/audio
+📄 Arquivo de Metadados: /home/ebastos/cr8/data/playlist.json
+📊 Planilha Oficial: https://docs.google.com/spreadsheets/d/15ajmPTWT7Rz0TIOet-K8RCzHphrnAEYjpOeBWhuvFqY
+
+📋 Cabeçalhos detectados: ['link_youtube', 'titulo', 'artista', 'bpm']
+⚡ [1] Áudio OK em audio/: The Offspring - The Kids Aren't Alright.mp3
+⚡ [2] Áudio OK em audio/: The Offspring - Pretty Fly (For A White Guy) (Official Music Video).mp3
+⚡ [3] Áudio OK em audio/: Sapão - Vou Desafiar Você (Clipe Oficial).mp3
+⚡ [4] Áudio OK em audio/: Dr. Dre - Still D.R.E. ft. Snoop Dogg.mp3
+⚡ [5] Áudio OK em audio/: Eminem - Till I Collapse.mp3
+
+============================================================
+🎉 SUCESSO! Todas as 5 faixas verificadas e sincronizadas:
+📄 /home/ebastos/cr8/data/playlist.json
+============================================================
+[2026-08-26 11:50:24] ⚡ Novas músicas detectadas! Enviando ao GitHub...
+[main 6533407] auto: sincronizacao automatica da playlist via cron
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+To https://github.com/eduardobbastos/rc8.git
+   4803b00..6533407  main -> main
+[2026-08-26 11:50:26] ✅ Sincronização e envio concluídos com sucesso!
+============================================================
