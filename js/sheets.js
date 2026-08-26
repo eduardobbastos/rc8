@@ -118,9 +118,32 @@ const SheetsManager = {
     },
 
     /**
-     * Busca a lista de músicas a partir da planilha pública
+     * Busca a lista de músicas:
+     * 1. Carrega o arquivo de metadados oficial do GitHub (data/playlist.json)
+     * 2. Faz fallback para a consulta ao vivo da planilha do Google Sheets
      */
     async fetchPlaylist(customSheetId = null) {
+        // 1. Tenta carregar os metadados oficiais sincronizados no GitHub
+        try {
+            const resJson = await fetch('data/playlist.json?v=' + Date.now());
+            if (resJson.ok) {
+                const data = await resJson.json();
+                if (data && data.tracks && data.tracks.length > 0) {
+                    console.log(`✅ ${data.tracks.length} músicas carregadas do arquivo oficial de metadados do GitHub!`);
+                    if (typeof localStorage !== 'undefined') {
+                        localStorage.setItem(this.cacheKey, JSON.stringify(data.tracks));
+                    }
+                    return {
+                        source: 'github_metadata',
+                        tracks: data.tracks,
+                        message: 'Playlist oficial RC8 sincronizada com o GitHub!'
+                    };
+                }
+            }
+        } catch (e) {
+            console.log('Metadados locais não disponíveis, consultando planilha ao vivo...', e);
+        }
+
         const sheetId = customSheetId || this.config.sheetId || this.extractSheetId(this.config.sheetUrl);
 
         // Se não tiver planilha configurada, retorna as músicas demo com indicação
@@ -128,15 +151,12 @@ const SheetsManager = {
             return {
                 source: 'demo',
                 tracks: this.demoTracks,
-                message: 'Usando playlist demo oficial RC8. Adicione sua planilha nas configurações para sincronizar suas músicas!'
+                message: 'Usando playlist demo oficial RC8.'
             };
         }
 
         // Constrói endpoints de consulta CSV do Google Sheets
-        // Formato 1: gviz tq (funciona para qualquer planilha compartilhada com "Qualquer pessoa com o link pode ler")
         const gvizUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv${this.config.sheetName ? `&sheet=${encodeURIComponent(this.config.sheetName)}` : ''}`;
-        
-        // Formato 2: pub?output=csv (para planilhas publicadas na web)
         const pubUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/pub?output=csv`;
 
         let csvData = null;

@@ -242,11 +242,24 @@ class RC8Player {
 
         this.updateMediaSessionMetadata();
 
-        // Para reprodução HTML5 se estiver tocando
+        // Para reprodução anterior
         this.htmlAudio.pause();
+        if (this.ytPlayer && this.ytPlayer.pauseVideo) {
+            this.ytPlayer.pauseVideo();
+        }
 
-        // Se a faixa possui ID do YouTube (prioridade máxima para evitar qualquer bloqueio de CORS/Drive)
-        if (track.youtubeId) {
+        // Prioridade 1: Arquivo MP3 local oficial hospedado no GitHub (audio/...)
+        const audioSrc = track.audioFile || track.url;
+        if (audioSrc && (audioSrc.startsWith('audio/') || audioSrc.includes('.mp3') || audioSrc.includes('.m4a'))) {
+            this.activeEngine = 'html5';
+            this.htmlAudio.src = audioSrc;
+            this.htmlAudio.load();
+
+            if (autoPlay && this.hasUserInteracted) {
+                this.htmlAudio.play().catch(e => console.log('Play pendente de clique:', e));
+            }
+        } else if (track.youtubeId) {
+            // Prioridade 2: YouTube Player
             this.activeEngine = 'youtube';
             if (this.ytPlayer && this.ytPlayer.loadVideoById) {
                 if (autoPlay && this.hasUserInteracted) {
@@ -256,10 +269,8 @@ class RC8Player {
                 }
             }
         } else {
+            // Fallback genérico
             this.activeEngine = 'html5';
-            if (this.ytPlayer && this.ytPlayer.pauseVideo) {
-                this.ytPlayer.pauseVideo();
-            }
             this.htmlAudio.src = track.url;
             this.htmlAudio.load();
 
@@ -284,7 +295,15 @@ class RC8Player {
             this.visualizer.resumeAudioContext();
         }
 
-        if (track && track.youtubeId) {
+        const audioSrc = track?.audioFile || track?.url;
+        if (audioSrc && (audioSrc.startsWith('audio/') || audioSrc.includes('.mp3') || audioSrc.includes('.m4a'))) {
+            this.activeEngine = 'html5';
+            try {
+                await this.htmlAudio.play();
+            } catch (err) {
+                console.warn('Erro ao tocar HTML5 áudio:', err);
+            }
+        } else if (track && track.youtubeId) {
             this.activeEngine = 'youtube';
             if (this.ytPlayer) {
                 if (this.ytPlayer.playVideo && this.ytPlayer.getPlayerState && this.ytPlayer.getPlayerState() !== -1) {
@@ -293,7 +312,6 @@ class RC8Player {
                     this.ytPlayer.loadVideoById(track.youtubeId);
                 }
             }
-            // Atualiza estado de reprodução
             this.isPlaying = true;
             if (this.visualizer) this.visualizer.start();
             if (this.onPlayStateChange) this.onPlayStateChange(true);

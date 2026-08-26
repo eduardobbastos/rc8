@@ -1,0 +1,62 @@
+{
+  "updatedAt": "/home/ebastos/cr8/data/playlist.json",
+  "totalTracks": 4,
+  "tracks": [
+    {
+      "id": "rc8-1",
+      "title": "The Kids Aren't Alright",
+      "artist": "The Offspring",
+      "bpm": 138,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "audio/The Offspring - The Kids Aren't Alright.mp3",
+      "url": "audio/The Offspring - The Kids Aren't Alright.mp3",
+      "cover": "assets/icon.svg",
+      "youtubeUrl": "The Offspring - The Kids Aren't Alright (Official Music Video) - YouTube",
+      "youtubeId": "",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-2",
+      "title": "Pretty Fly (For A White Guy)",
+      "artist": "The Offspring",
+      "bpm": 100,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "audio/The Offspring - Pretty Fly (For A White Guy) (Official Music Video).mp3",
+      "url": "audio/The Offspring - Pretty Fly (For A White Guy) (Official Music Video).mp3",
+      "cover": "https://img.youtube.com/vi/QtTR-_Klcq8/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=QtTR-_Klcq8",
+      "youtubeId": "QtTR-_Klcq8",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-3",
+      "title": "Vou Desafiar Você",
+      "artist": "Sapão",
+      "bpm": 130,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "audio/Sapão - Vou Desafiar Você (Clipe Oficial).mp3",
+      "url": "audio/Sapão - Vou Desafiar Você (Clipe Oficial).mp3",
+      "cover": "https://img.youtube.com/vi/W6f8jlqRXB4/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=W6f8jlqRXB4",
+      "youtubeId": "W6f8jlqRXB4",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-4",
+      "title": "Still",
+      "artist": "D.R.E. ft. Snoop Dogg",
+      "bpm": 100,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "audio/Dr. Dre - Still D.R.E. ft. Snoop Dogg.mp3",
+      "url": "audio/Dr. Dre - Still D.R.E. ft. Snoop Dogg.mp3",
+      "cover": "https://img.youtube.com/vi/_CL6n0FJZpk/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=_CL6n0FJZpk",
+      "youtubeId": "_CL6n0FJZpk",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    }
+  ]
+}
