@@ -285,14 +285,28 @@ const SheetsManager = {
                 if (foundUrl) rawUrl = foundUrl;
             }
 
-            if (!rawUrl) continue;
+            // Extrai ID do YouTube se presente
+            let youtubeId = '';
+            const ytSearchStr = (youtubeUrlIdx !== -1 && r[youtubeUrlIdx]) ? r[youtubeUrlIdx] : rawUrl;
+            const ytMatch = ytSearchStr.match(/(?:v=|\/embed\/|\/watch\?v=|\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            if (ytMatch) {
+                youtubeId = ytMatch[1];
+            }
 
             const streamUrl = this.convertGoogleDriveLink(rawUrl);
             const title = (titleIdx !== -1 && r[titleIdx]) ? r[titleIdx] : `Faixa #${i}`;
             const artist = (artistIdx !== -1 && r[artistIdx]) ? r[artistIdx] : 'Turma das 8h';
             const bpm = (bpmIdx !== -1 && r[bpmIdx]) ? parseInt(r[bpmIdx], 10) || 140 : 138;
-            const genre = (genreIdx !== -1 && r[genreIdx]) ? r[genreIdx] : 'Workout';
-            const cover = (coverIdx !== -1 && r[coverIdx] && r[coverIdx].startsWith('http')) ? r[coverIdx] : this.getDynamicCover(i);
+            const genre = (genreIdx !== -1 && r[genreIdx]) ? r[genreIdx] : 'Workout Rock';
+            
+            // Se tiver YouTube ID, usa a capa oficial do clipe em HD
+            let cover = this.getDynamicCover(i);
+            if (coverIdx !== -1 && r[coverIdx] && r[coverIdx].startsWith('http')) {
+                cover = r[coverIdx];
+            } else if (youtubeId) {
+                cover = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+            }
+
             const dedication = (dedicateIdx !== -1 && r[dedicateIdx]) ? r[dedicateIdx] : 'Resenha RC8';
 
             tracks.push({
@@ -300,6 +314,8 @@ const SheetsManager = {
                 title,
                 artist,
                 url: streamUrl,
+                youtubeId,
+                youtubeUrl: youtubeId ? `https://www.youtube.com/watch?v=${youtubeId}` : '',
                 bpm,
                 genre,
                 cover,

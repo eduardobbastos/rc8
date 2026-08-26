@@ -237,7 +237,13 @@
     <!-- Container de Notificações Toast -->
     <div class="toast-container" id="toast-container"></div>
 
+    <!-- YouTube Hidden Audio Player Engine -->
+    <div id="yt-player-wrapper" style="position: fixed; left: -9999px; top: -9999px; width: 10px; height: 10px; overflow: hidden; pointer-events: none; opacity: 0; z-index: -100;">
+        <div id="yt-player"></div>
+    </div>
+
     <!-- Scripts da Aplicação -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="js/sheets.js"></script>
     <script src="js/visualizer.js"></script>
     <script src="js/wod-timer.js"></script>
