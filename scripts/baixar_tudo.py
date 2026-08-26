@@ -10,16 +10,16 @@ import csv
 import urllib.request
 import yt_dlp
 
-SHEET_ID = "1QU6J8zvAGVeWFzglui0fJ8NiHgmOY9PtTcMedN1cmA0"
+SHEET_ID = "15ajmPTWT7Rz0TIOet-K8RCzHphrnAEYjpOeBWhuvFqY"
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "downloads")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("=" * 60)
-print("📻 RC8 - BAIXADOR DE MÚSICAS DO YOUTUBE (TURMA DAS 8H)")
+print("📻 RC8 - BAIXADOR AUTOMÁTICO DE MÚSICAS PENDENTES")
 print("=" * 60)
-print(f"📁 Pasta de destino: {OUTPUT_DIR}")
-print(f"📊 Planilha: https://docs.google.com/spreadsheets/d/{SHEET_ID}\n")
+print(f"📁 Pasta local de destino: {OUTPUT_DIR}")
+print(f"📊 Planilha Oficial RC8: https://docs.google.com/spreadsheets/d/{SHEET_ID}\n")
 
 def get_sheet_data():
     url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv"
@@ -50,13 +50,12 @@ def baixar_musica(youtube_url, titulo_custom=None):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             info = ydl.extract_info(youtube_url, download=True)
-            # Nome do arquivo MP3 final convertido
             base_name = ydl.prepare_filename(info)
             mp3_name = os.path.splitext(base_name)[0] + '.mp3'
-            print(f"✅ Áudio MP3 gerado com sucesso: {os.path.basename(mp3_name)}")
+            print(f"✅ Áudio MP3 gerado: {os.path.basename(mp3_name)}")
             return mp3_name
         except Exception as err:
-            print(f"❌ Erro ao baixar áudio de {youtube_url}: {err}")
+            print(f"❌ Erro ao baixar {youtube_url}: {err}")
             return None
 
 def main():
@@ -69,20 +68,35 @@ def main():
             baixar_musica(link)
         return
 
-    print(f"🔍 {len(rows)-1} linhas encontradas na planilha. Processando...\n")
+    print(f"🔍 {len(rows)-1} linhas encontradas na planilha.")
+    
+    pendentes = []
+    for i, row in enumerate(rows[1:], start=2):
+        yt_link = row[0].strip() if len(row) > 0 else ''
+        drive_link = row[5].strip() if len(row) > 5 else ''
+        status = row[4].strip() if len(row) > 4 else ''
+        
+        # Filtra apenas linhas que possuem link do YouTube mas NÃO possuem link do Google Drive (Coluna F)
+        if yt_link and ('youtube.com' in yt_link or 'youtu.be' in yt_link) and not drive_link:
+            pendentes.append((i, yt_link, row[1] if len(row) > 1 else ''))
+
+    if not pendentes:
+        print("🎉 Todas as músicas da planilha já possuem o link do Google Drive configurado!")
+        print("Adicione novos links do YouTube na Coluna A da planilha para processar.")
+        return
+
+    print(f"⚡ Encontradas {len(pendentes)} músicas pendentes de download!\n")
     
     sucessos = 0
-    for i, row in enumerate(rows[1:], start=2):
-        yt_link = next((cell for cell in row if 'youtube.com' in cell or 'youtu.be' in cell), None)
-        if yt_link:
-            print(f"\n[Linha {i}] Baixando: {yt_link}")
-            res = baixar_musica(yt_link)
-            if res:
-                sucessos += 1
+    for num_linha, link, titulo in pendentes:
+        print(f"\n[Linha {num_linha}] Baixando: {titulo or link}")
+        res = baixar_musica(link)
+        if res:
+            sucessos += 1
                 
     print("\n" + "=" * 60)
-    print(f"🎉 Finalizado! {sucessos} áudios baixados com sucesso na pasta 'downloads/'!")
-    print("👉 Agora basta arrastar os arquivos para a sua pasta do Google Drive:")
+    print(f"🎉 Finalizado! {sucessos} novos áudios MP3 baixados na pasta 'downloads/'!")
+    print("👉 Arraste os arquivos para a pasta do Google Drive:")
     print("   https://drive.google.com/drive/folders/1PmxduOBedkC9hxJx72s-7Oh6GpqYI5CB")
     print("=" * 60)
 
