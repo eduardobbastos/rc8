@@ -1,5 +1,5 @@
 /**
- * RC8 - Audio Player Engine & MediaSession Integration
+ * RC8 - Audio Player Engine & Smart Blob Caching
  * Resenha do Cross Turma das 8 Horas
  */
 
@@ -7,15 +7,19 @@ class RC8Player {
     constructor() {
         this.audio = new Audio();
         this.audio.preload = 'auto';
-        // Nao define crossOrigin para permitir streaming direto do Google Drive sem restricao de CORS
 
         this.playlist = [];
         this.currentIndex = 0;
         this.isPlaying = false;
         this.isShuffle = false;
-        this.isRadioMode = true; // Modo Rádio Ao Vivo (fluxo contínuo)
+        this.isRadioMode = true;
         this.volume = 0.9;
         this.audio.volume = this.volume;
+
+        // Cache inteligente em memória de Blobs de áudio (Zero CORS e Instant Play)
+        this.audioBlobCache = new Map();
+        this.isLoadingAudio = false;
+        this.isErrorRecovering = false;
 
         // Visualizer engine reference
         this.visualizer = null;
@@ -26,6 +30,7 @@ class RC8Player {
         this.onTimeUpdate = null;
         this.onError = null;
         this.onPlaylistUpdate = null;
+        this.onLoadingState = null;
 
         this.setupAudioListeners();
         this.setupMediaSession();
@@ -67,8 +72,6 @@ class RC8Player {
             }
         });
 
-        this.isErrorRecovering = false;
-
         this.audio.addEventListener('error', (e) => {
             const track = this.getCurrentTrack();
             console.warn('Falha na reprodução da faixa:', track?.title);
@@ -90,7 +93,7 @@ class RC8Player {
                 setTimeout(() => {
                     this.isErrorRecovering = false;
                     this.next(false);
-                }, 3000);
+                }, 3500);
             }
         });
     }
@@ -118,7 +121,7 @@ class RC8Player {
             artist: track.artist || 'Turma das 8 Horas',
             album: 'Rádio RC8 - Resenha do Cross',
             artwork: [
-                { src: track.cover || 'assets/icon-512.png', sizes: '512x512', type: 'image/png' }
+                { src: track.cover || 'assets/icon.svg', sizes: '512x512', type: 'image/svg+xml' }
             ]
         });
     }
@@ -141,19 +144,79 @@ class RC8Player {
         this.loadTrack(this.currentIndex, false);
     }
 
-    loadTrack(index, autoPlay = true) {
+    /**
+     * Busca o áudio via fetch, armazena no cache Blob e retorna a URL local
+     */
+    async getCachedAudioUrl(track) {
+        if (!track || !track.url) return '';
+
+        // Se já estiver em cache
+        if (this.audioBlobCache.has(track.id)) {
+            return this.audioBlobCache.get(track.id);
+        }
+
+        try {
+            if (this.onLoadingState) this.onLoadingState(true, track);
+
+            const response = await fetch(track.url);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const blob = await response.blob();
+            // Cria a URL de objeto local (ex: blob:https://eduardobbastos.github.io/...)
+            const localBlobUrl = URL.createObjectURL(blob);
+            this.audioBlobCache.set(track.id, localBlobUrl);
+
+            // Pré-carrega a próxima música em segundo plano
+            this.preloadNextTrack();
+
+            return localBlobUrl;
+        } catch (err) {
+            console.warn(`Fetch blob direto falhou para "${track.title}", usando fallback de stream:`, err);
+            return track.url;
+        } finally {
+            if (this.onLoadingState) this.onLoadingState(false, track);
+        }
+    }
+
+    /**
+     * Pré-carrega a próxima música em segundo plano
+     */
+    async preloadNextTrack() {
+        if (this.playlist.length <= 1) return;
+        const nextIdx = (this.currentIndex + 1) % this.playlist.length;
+        const nextTrack = this.playlist[nextIdx];
+
+        if (nextTrack && !this.audioBlobCache.has(nextTrack.id)) {
+            try {
+                const res = await fetch(nextTrack.url);
+                if (res.ok) {
+                    const blob = await res.blob();
+                    this.audioBlobCache.set(nextTrack.id, URL.createObjectURL(blob));
+                    console.log(`⚡ Próxima música em cache: ${nextTrack.title}`);
+                }
+            } catch (e) {}
+        }
+    }
+
+    async loadTrack(index, autoPlay = true) {
         if (index < 0 || index >= this.playlist.length) return;
         this.currentIndex = index;
         const track = this.playlist[this.currentIndex];
 
-        this.audio.src = track.url;
-        this.audio.load();
-
-        this.updateMediaSessionMetadata();
-
         if (this.onTrackChange) {
             this.onTrackChange(track, this.currentIndex);
         }
+
+        this.updateMediaSessionMetadata();
+
+        // Obtém a URL do Blob em cache local
+        const playUrl = await this.getCachedAudioUrl(track);
+        
+        // Atribui ao elemento de áudio
+        this.audio.src = playUrl;
+        this.audio.load();
 
         if (autoPlay) {
             this.play();
@@ -167,7 +230,7 @@ class RC8Player {
             }
             await this.audio.play();
         } catch (err) {
-            console.warn('Play foi bloqueado pelo navegador até primeira interação do usuário:', err);
+            console.warn('Play bloqueado até primeira interação do usuário:', err);
         }
     }
 
@@ -203,7 +266,6 @@ class RC8Player {
     previous() {
         if (this.playlist.length === 0) return;
 
-        // Se já tocou mais de 3 segundos, volta pro início da mesma faixa
         if (this.audio.currentTime > 3) {
             this.audio.currentTime = 0;
             return;

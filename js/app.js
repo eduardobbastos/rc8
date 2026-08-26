@@ -119,6 +119,20 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPlaylist();
     };
 
+    player.onLoadingState = (isLoading, track) => {
+        if (isLoading) {
+            elements.trackDedication.style.display = 'inline-flex';
+            elements.trackDedication.innerHTML = `<span>⏳ Carregando áudio...</span>`;
+        } else if (track) {
+            if (track.dedication) {
+                elements.trackDedication.style.display = 'inline-flex';
+                elements.trackDedication.innerHTML = `<span>🔥 ${track.dedication}</span>`;
+            } else {
+                elements.trackDedication.style.display = 'none';
+            }
+        }
+    };
+
     player.onPlayStateChange = (isPlaying) => {
         if (isPlaying) {
             elements.playIcon.style.display = 'none';
