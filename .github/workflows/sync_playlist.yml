@@ -1,0 +1,49 @@
+name: Sincronizador Automático de Músicas RC8
+
+on:
+  schedule:
+    # Executa a cada 30 minutos automaticamente
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Permite disparar manualmente pelo botão no GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Configurar Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar FFmpeg e Dependências
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          pip install --upgrade yt-dlp
+
+      - name: Sincronizar Músicas da Planilha e Gerar Metadados
+        run: |
+          python3 scripts/sincronizar_musicas.py
+
+      - name: Comitar e Enviar Novas Músicas ao GitHub
+        run: |
+          git config user.name "RC8 Automation Bot"
+          git config user.email "bot@rc8play.local"
+          git add audio/ data/playlist.json
+          
+          if git diff --staged --quiet; then
+            echo "Nenhuma música nova detectada na planilha. Repositório já está 100% atualizado."
+          else
+            git commit -m "auto: sincronizacao automatica da playlist [skip ci]"
+            git push origin main
+            echo "✅ Novas músicas sincronizadas e enviadas com sucesso ao GitHub!"
+          fi

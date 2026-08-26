@@ -223,15 +223,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await SheetsManager.fetchPlaylist();
             player.setPlaylist(res.tracks, 0);
 
-            if (res.source === 'live_sheet') {
-                elements.playlistSourceBadge.textContent = '● PLANILHA SINCRONIZADA';
+            if (res.source === 'github_metadata' || res.source === 'live_sheet') {
+                elements.playlistSourceBadge.textContent = '● PLAYLIST OFICIAL RC8';
                 elements.playlistSourceBadge.style.color = 'var(--neon-green)';
             } else if (res.source === 'cache') {
-                elements.playlistSourceBadge.textContent = '● CACHE LOCAL';
+                elements.playlistSourceBadge.textContent = '● PLAYLIST OFICIAL RC8 (OFFLINE)';
                 elements.playlistSourceBadge.style.color = 'var(--neon-orange)';
             } else {
-                elements.playlistSourceBadge.textContent = '● PLAYLIST DEMO OFICIAL RC8';
-                elements.playlistSourceBadge.style.color = 'var(--neon-cyan)';
+                elements.playlistSourceBadge.textContent = '● PLAYLIST OFICIAL RC8';
+                elements.playlistSourceBadge.style.color = 'var(--neon-green)';
             }
 
             if (isManual) {
