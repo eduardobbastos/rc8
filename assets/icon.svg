@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="neonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00FF87" />
+      <stop offset="100%" stop-color="#60EFFF" />
+    </linearGradient>
+    <linearGradient id="fireGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B00" />
+      <stop offset="100%" stop-color="#FF0055" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Background Dark Carbon -->
+  <rect width="512" height="512" rx="110" fill="#080a0f" stroke="#1c2432" stroke-width="6"/>
+  
+  <!-- Circular soundwave rings -->
+  <circle cx="256" cy="256" r="180" stroke="url(#neonGrad)" stroke-width="4" fill="none" opacity="0.25" stroke-dasharray="12 12"/>
+  <circle cx="256" cy="256" r="215" stroke="url(#neonGrad)" stroke-width="8" fill="none" opacity="0.6"/>
+  
+  <!-- Equalizer Bars Icon -->
+  <rect x="130" y="220" width="28" height="120" rx="14" fill="url(#neonGrad)" filter="url(#glow)"/>
+  <rect x="175" y="150" width="28" height="190" rx="14" fill="url(#neonGrad)" filter="url(#glow)"/>
+  <rect x="220" y="100" width="28" height="240" rx="14" fill="url(#neonGrad)" filter="url(#glow)"/>
+  <rect x="265" y="170" width="28" height="170" rx="14" fill="url(#fireGrad)" filter="url(#glow)"/>
+  <rect x="310" y="130" width="28" height="210" rx="14" fill="url(#fireGrad)" filter="url(#glow)"/>
+  <rect x="355" y="200" width="28" height="140" rx="14" fill="url(#fireGrad)" filter="url(#glow)"/>
+  
+  <!-- RC8 Badge text -->
+  <rect x="156" y="360" width="200" height="60" rx="16" fill="#0e121a" stroke="url(#neonGrad)" stroke-width="3"/>
+  <text x="256" y="403" fill="#ffffff" font-family="sans-serif" font-weight="900" font-size="34" text-anchor="middle" letter-spacing="4">RC8</text>
+</svg>

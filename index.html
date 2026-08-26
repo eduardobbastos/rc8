@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RC8 - Rádio Online Coletiva | Resenha do Cross Turma das 8 Horas</title>
+    <meta name="description" content="Rádio oficial da Resenha do Cross - Turma das 8 Horas. Músicas de treino de alta intensidade sincronizadas pelo Google Planilhas e Google Drive.">
+    <meta name="theme-color" content="#00FF87">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons (Lucide via CDN / SVG) -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Background Canvas do Visualizador e Partículas Reativas -->
+    <canvas id="visualizer-canvas"></canvas>
+
+    <div class="app-container">
+        <!-- Header Superior -->
+        <header class="header">
+            <div class="logo-group">
+                <div class="logo-badge">RC8</div>
+                <div class="logo-text">
+                    <h1>RESENHA DO CROSS</h1>
+                    <span>TURMA DAS 8 HORAS</span>
+                </div>
+            </div>
+
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                <span>AO VIVO</span>
+            </div>
+
+            <div class="header-actions">
+                <button class="icon-btn" id="btn-sync-sheet" title="Sincronizar Planilha">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                    </svg>
+                </button>
+                <button class="icon-btn" id="btn-open-settings" title="Configurar Planilha / Drive">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Painel Esquerdo: Player Hero -->
+            <section class="player-hero-card">
+                <div class="album-art-wrapper">
+                    <div class="disc-ring paused" id="disc-ring"></div>
+                    <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400&q=80" alt="Capa da Música" class="album-cover" id="album-cover">
+                    <div class="bpm-badge" id="bpm-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        <span id="track-bpm-text">140 BPM</span>
+                    </div>
+                </div>
+
+                <div class="track-info">
+                    <span class="track-genre" id="track-genre">WORKOUT BASS</span>
+                    <h2 class="track-title" id="track-title">Carregando rádio...</h2>
+                    <p class="track-artist" id="track-artist">Turma das 8 Horas</p>
+                    <div class="track-dedication" id="track-dedication">
+                        <span>🔥 Pedido da Turma</span>
+                    </div>
+                </div>
+
+                <!-- Barra de Progresso -->
+                <div class="progress-container">
+                    <div class="progress-bar-wrapper" id="progress-wrapper">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="time-stamps">
+                        <span id="time-current">00:00</span>
+                        <span id="time-total">00:00</span>
+                    </div>
+                </div>
+
+                <!-- Controles do Player -->
+                <div class="player-controls">
+                    <button class="control-btn" id="btn-shuffle" title="Modo Aleatório">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="16 3 21 3 21 8"></polyline>
+                            <line x1="4" y1="20" x2="21" y2="3"></line>
+                            <polyline points="21 16 21 21 16 21"></polyline>
+                            <line x1="15" y1="15" x2="21" y2="21"></line>
+                            <line x1="4" y1="4" x2="9" y2="9"></line>
+                        </svg>
+                    </button>
+                    
+                    <button class="control-btn" id="btn-prev" title="Música Anterior">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                            <line x1="5" y1="19" x2="5" y2="5"></line>
+                        </svg>
+                    </button>
+
+                    <button class="control-btn play-pause-btn" id="btn-play" title="Tocar / Pausar">
+                        <svg id="play-icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="pause-icon" style="display: none;" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                    </button>
+
+                    <button class="control-btn" id="btn-next" title="Próxima Música">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                            <line x1="19" y1="5" x2="19" y2="19"></line>
+                        </svg>
+                    </button>
+
+                    <button class="control-btn active" id="btn-radio-mode" title="Modo Rádio Contínua">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="2"></circle>
+                            <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Controle de Volume -->
+                <div class="volume-group">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                    <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.01" value="0.9">
+                </div>
+            </section>
+
+            <!-- Painel Direito: Abas de WOD Timer & Playlist -->
+            <section class="side-panel">
+                <div class="panel-tabs">
+                    <button class="tab-btn active" data-tab="playlist">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                        Músicas da Planilha
+                    </button>
+                    <button class="tab-btn" data-tab="wod-timer">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        WOD Timer
+                    </button>
+                </div>
+
+                <!-- Conteúdo da Aba Playlist -->
+                <div class="tab-content" id="tab-playlist-content">
+                    <div class="playlist-header">
+                        <h3>Playlist Coletiva (<span id="playlist-count">0</span>)</h3>
+                        <span id="playlist-source-badge" style="font-size: 0.75rem; color: var(--neon-cyan); font-weight: 700;">LIVE GOOGLE PLANILHAS</span>
+                    </div>
+
+                    <input type="text" class="search-input" id="search-input" placeholder="🔍 Filtrar música, artista ou dedicatória...">
+
+                    <div class="playlist-tracks-scroll" id="playlist-container">
+                        <!-- Itens renderizados dinamicamente pelo JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Conteúdo da Aba WOD Timer -->
+                <div class="tab-content" id="tab-wod-timer-content" style="display: none;">
+                    <div class="wod-timer-wrapper">
+                        <div class="wod-modes-selector">
+                            <button class="mode-chip active" data-mode="tabata">TABATA (20s/10s)</button>
+                            <button class="mode-chip" data-mode="emom">EMOM (10 Min)</button>
+                            <button class="mode-chip" data-mode="amrap">AMRAP (12 Min)</button>
+                            <button class="mode-chip" data-mode="stopwatch">CRONÔMETRO</button>
+                        </div>
+
+                        <div class="timer-display-box work-phase" id="timer-box">
+                            <span class="timer-phase-tag" id="timer-phase">WORK</span>
+                            <span class="timer-digits" id="timer-digits">00:20</span>
+                            <span class="timer-round-info" id="timer-round">Round 1 de 8</span>
+                        </div>
+
+                        <div class="timer-controls">
+                            <button class="btn-timer start" id="btn-timer-start">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                Iniciar Treino
+                            </button>
+                            <button class="btn-timer pause" id="btn-timer-pause" style="display: none;">Pausar</button>
+                            <button class="btn-timer reset" id="btn-timer-reset">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation Bar (Foco Mobile) -->
+        <nav class="bottom-bar">
+            <button class="nav-item active" id="nav-player">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Rádio RC8</span>
+            </button>
+            <button class="nav-item" id="nav-timer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>WOD Timer</span>
+            </button>
+            <button class="nav-item" id="nav-share">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                <span>Compartilhar</span>
+            </button>
+            <button class="nav-item" id="nav-settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Config</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modal de Configuração da Planilha Google & Drive -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>⚡ Conectar Google Planilhas & Drive</h3>
+                <button class="icon-btn" id="btn-close-modal">✕</button>
+            </div>
+
+            <div class="guide-box">
+                <strong>Como funciona a sincronização:</strong><br>
+                1. Crie uma planilha no Google Sheets com as colunas: <code>Titulo</code>, <code>Artista</code>, <code>Link_Drive_ou_Audio</code>, <code>BPM</code>, <code>Dedicado_Por</code>.<br>
+                2. Compartilhe a planilha como <strong>"Qualquer pessoa com o link pode ler"</strong>.<br>
+                3. Na coluna do link, cole o link de compartilhamento do arquivo de áudio no Google Drive (ex: <em>https://drive.google.com/file/d/...</em>).<br>
+                4. Cole o link da sua planilha abaixo e clique em Salvar!
+            </div>
+
+            <div class="form-group">
+                <label for="input-sheet-url">URL ou ID da Planilha do Google:</label>
+                <input type="text" class="form-input" id="input-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/SEU_ID_AQUI/edit...">
+            </div>
+
+            <div class="form-group">
+                <label for="input-sheet-name">Nome da Aba (Opcional - ex: Pagina1):</label>
+                <input type="text" class="form-input" id="input-sheet-name" placeholder="Deixe em branco para usar a primeira aba">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-test-sheet">Testar Conexão</button>
+                <button class="btn-primary" id="btn-save-sheet">Salvar e Sincronizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container de Notificações Toast -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts da Aplicação -->
+    <script src="js/sheets.js"></script>
+    <script src="js/visualizer.js"></script>
+    <script src="js/wod-timer.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "RC8 - Rádio Resenha do Cross",
+  "short_name": "RC8 Rádio",
+  "description": "Rádio Online Coletiva da Turma das 8 Horas - Música pro treino bom!",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#080a0f",
+  "theme_color": "#00FF87",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
