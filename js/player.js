@@ -1,5 +1,5 @@
 /**
- * RC8 - Audio Player Engine & Smart Blob Caching
+ * RC8 - Audio Player Engine & Direct Streaming
  * Resenha do Cross Turma das 8 Horas
  */
 
@@ -16,10 +16,8 @@ class RC8Player {
         this.volume = 0.9;
         this.audio.volume = this.volume;
 
-        // Cache inteligente em memória de Blobs de áudio (Zero CORS e Instant Play)
-        this.audioBlobCache = new Map();
-        this.isLoadingAudio = false;
         this.isErrorRecovering = false;
+        this.hasUserInteracted = false;
 
         // Visualizer engine reference
         this.visualizer = null;
@@ -44,6 +42,7 @@ class RC8Player {
     setupAudioListeners() {
         this.audio.addEventListener('play', () => {
             this.isPlaying = true;
+            this.hasUserInteracted = true;
             if (this.visualizer) this.visualizer.start();
             if (this.onPlayStateChange) this.onPlayStateChange(true);
             this.updateMediaSessionState();
@@ -57,7 +56,7 @@ class RC8Player {
         });
 
         this.audio.addEventListener('ended', () => {
-            this.next(true); // Auto avançar
+            this.next(true);
         });
 
         this.audio.addEventListener('timeupdate', () => {
@@ -74,26 +73,23 @@ class RC8Player {
 
         this.audio.addEventListener('error', (e) => {
             const track = this.getCurrentTrack();
-            console.warn('Falha na reprodução da faixa:', track?.title);
+            console.warn('Erro ao carregar stream:', track?.title, this.audio.src);
             
             this.isPlaying = false;
             if (this.visualizer) this.visualizer.stop();
             if (this.onPlayStateChange) this.onPlayStateChange(false);
 
             if (this.onError) {
-                this.onError({
-                    track: track,
-                    error: e
-                });
+                this.onError({ track, error: e });
             }
 
-            // Só avança para a próxima se houver mais de uma música na playlist
-            if (this.playlist.length > 1 && !this.isErrorRecovering) {
+            // Tenta avançar suavemente apenas se houver mais de uma faixa e não estiver em loop
+            if (this.playlist.length > 1 && !this.isErrorRecovering && this.hasUserInteracted) {
                 this.isErrorRecovering = true;
                 setTimeout(() => {
                     this.isErrorRecovering = false;
                     this.next(false);
-                }, 3500);
+                }, 4000);
             }
         });
     }
@@ -144,63 +140,7 @@ class RC8Player {
         this.loadTrack(this.currentIndex, false);
     }
 
-    /**
-     * Busca o áudio via fetch, armazena no cache Blob e retorna a URL local
-     */
-    async getCachedAudioUrl(track) {
-        if (!track || !track.url) return '';
-
-        // Se já estiver em cache
-        if (this.audioBlobCache.has(track.id)) {
-            return this.audioBlobCache.get(track.id);
-        }
-
-        try {
-            if (this.onLoadingState) this.onLoadingState(true, track);
-
-            const response = await fetch(track.url);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-
-            const blob = await response.blob();
-            // Cria a URL de objeto local (ex: blob:https://eduardobbastos.github.io/...)
-            const localBlobUrl = URL.createObjectURL(blob);
-            this.audioBlobCache.set(track.id, localBlobUrl);
-
-            // Pré-carrega a próxima música em segundo plano
-            this.preloadNextTrack();
-
-            return localBlobUrl;
-        } catch (err) {
-            console.warn(`Fetch blob direto falhou para "${track.title}", usando fallback de stream:`, err);
-            return track.url;
-        } finally {
-            if (this.onLoadingState) this.onLoadingState(false, track);
-        }
-    }
-
-    /**
-     * Pré-carrega a próxima música em segundo plano
-     */
-    async preloadNextTrack() {
-        if (this.playlist.length <= 1) return;
-        const nextIdx = (this.currentIndex + 1) % this.playlist.length;
-        const nextTrack = this.playlist[nextIdx];
-
-        if (nextTrack && !this.audioBlobCache.has(nextTrack.id)) {
-            try {
-                const res = await fetch(nextTrack.url);
-                if (res.ok) {
-                    const blob = await res.blob();
-                    this.audioBlobCache.set(nextTrack.id, URL.createObjectURL(blob));
-                    console.log(`⚡ Próxima música em cache: ${nextTrack.title}`);
-                }
-            } catch (e) {}
-        }
-    }
-
-    async loadTrack(index, autoPlay = true) {
+    loadTrack(index, autoPlay = true) {
         if (index < 0 || index >= this.playlist.length) return;
         this.currentIndex = index;
         const track = this.playlist[this.currentIndex];
@@ -211,26 +151,24 @@ class RC8Player {
 
         this.updateMediaSessionMetadata();
 
-        // Obtém a URL do Blob em cache local
-        const playUrl = await this.getCachedAudioUrl(track);
-        
-        // Atribui ao elemento de áudio
-        this.audio.src = playUrl;
+        // Atribui a URL oficial de áudio direto
+        this.audio.src = track.url;
         this.audio.load();
 
-        if (autoPlay) {
+        if (autoPlay && this.hasUserInteracted) {
             this.play();
         }
     }
 
     async play() {
+        this.hasUserInteracted = true;
         try {
             if (this.visualizer) {
                 this.visualizer.resumeAudioContext();
             }
             await this.audio.play();
         } catch (err) {
-            console.warn('Play bloqueado até primeira interação do usuário:', err);
+            console.warn('Aguardando toque/clique do usuário para iniciar reprodução:', err);
         }
     }
 
@@ -239,6 +177,7 @@ class RC8Player {
     }
 
     togglePlay() {
+        this.hasUserInteracted = true;
         if (this.isPlaying) {
             this.pause();
         } else {
@@ -254,10 +193,10 @@ class RC8Player {
             do {
                 nextIdx = Math.floor(Math.random() * this.playlist.length);
             } while (nextIdx === this.currentIndex && this.playlist.length > 1);
-            this.loadTrack(nextIdx, true);
+            this.loadTrack(nextIdx, this.hasUserInteracted);
         } else {
             const nextIdx = (this.currentIndex + 1) % this.playlist.length;
-            this.loadTrack(nextIdx, true);
+            this.loadTrack(nextIdx, this.hasUserInteracted);
         }
 
         if (navigator.vibrate) navigator.vibrate(30);
@@ -273,7 +212,7 @@ class RC8Player {
 
         let prevIdx = this.currentIndex - 1;
         if (prevIdx < 0) prevIdx = this.playlist.length - 1;
-        this.loadTrack(prevIdx, true);
+        this.loadTrack(prevIdx, this.hasUserInteracted);
 
         if (navigator.vibrate) navigator.vibrate(30);
     }

@@ -92,7 +92,7 @@ const SheetsManager = {
             return url;
         }
 
-        // Tenta extrair o ID do arquivo do Drive
+        // Extrai o ID do arquivo do Drive de qualquer formato de link
         let fileId = '';
         const matchFile = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
         if (matchFile) {
@@ -101,14 +101,17 @@ const SheetsManager = {
             const matchIdParam = url.match(/[?&]id=([a-zA-Z0-9-_]+)/);
             if (matchIdParam) {
                 fileId = matchIdParam[1];
-            } else if (/^[a-zA-Z0-9-_]{25,}$/.test(url)) {
-                fileId = url;
+            } else {
+                const matchGeneral = url.match(/([a-zA-Z0-9-_]{25,})/);
+                if (matchGeneral) {
+                    fileId = matchGeneral[1];
+                }
             }
         }
 
         if (fileId) {
-            // URL de download direto e streaming do Google Drive
-            return `https://drive.google.com/uc?export=download&id=${fileId}`;
+            // Endpoint oficial do Google Drive que entrega o MP3 com status 200
+            return `https://drive.usercontent.google.com/download?id=${fileId}&export=download`;
         }
 
         return url;
