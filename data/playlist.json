@@ -1,6 +1,6 @@
 {
-  "updatedAt": "/home/ebastos/cr8/data/playlist.json",
-  "totalTracks": 5,
+  "updatedAt": "/home/runner/work/rc8/rc8/data/playlist.json",
+  "totalTracks": 8,
   "tracks": [
     {
       "id": "rc8-1",
@@ -69,6 +69,48 @@
       "cover": "https://img.youtube.com/vi/ytQ5CYE1VZw/hqdefault.jpg",
       "youtubeUrl": "https://www.youtube.com/watch?v=ytQ5CYE1VZw",
       "youtubeId": "ytQ5CYE1VZw",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-6",
+      "title": "Thunderstruck",
+      "artist": "AC/DC",
+      "bpm": 125,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "",
+      "url": "https://youtu.be/v2AC41dglnM?is=V3iuwyJA84JT3i51",
+      "cover": "https://img.youtube.com/vi/v2AC41dglnM/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=v2AC41dglnM",
+      "youtubeId": "v2AC41dglnM",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-7",
+      "title": "Dynamite",
+      "artist": "BTS",
+      "bpm": 80,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "",
+      "url": "https://youtu.be/VG3JsmOmDqw?is=Nygxvty3F0Fb5GMv",
+      "cover": "https://img.youtube.com/vi/VG3JsmOmDqw/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=VG3JsmOmDqw",
+      "youtubeId": "VG3JsmOmDqw",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-8",
+      "title": "Can't Hold Us",
+      "artist": "Macklemore & Ryan Lewis",
+      "bpm": 138,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "",
+      "url": "https://youtu.be/VG3JsmOmDqw?is=Nygxvty3F0Fb5GMv",
+      "cover": "https://img.youtube.com/vi/VG3JsmOmDqw/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=VG3JsmOmDqw",
+      "youtubeId": "VG3JsmOmDqw",
       "driveUrl": "",
       "dedication": "Resenha das 8h"
     }
