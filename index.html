@@ -6,6 +6,7 @@
     <title>RC8 - Rádio Online Coletiva | Resenha do Cross Turma das 8 Horas</title>
     <meta name="description" content="Rádio oficial da Resenha do Cross - Turma das 8 Horas. Músicas de treino de alta intensidade sincronizadas pelo Google Planilhas e Google Drive.">
     <meta name="theme-color" content="#00FF87">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
@@ -231,39 +232,6 @@
                 <span>Compartilhar</span>
             </button>
         </nav>
-    </div>
-
-    <!-- Modal de Configuração da Planilha Google & Drive -->
-    <div class="modal-overlay" id="settings-modal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3>⚡ Conectar Google Planilhas & Drive</h3>
-                <button class="icon-btn" id="btn-close-modal">✕</button>
-            </div>
-
-            <div class="guide-box">
-                <strong>Como funciona a sincronização:</strong><br>
-                1. Crie uma planilha no Google Sheets com as colunas: <code>Titulo</code>, <code>Artista</code>, <code>Link_Drive_ou_Audio</code>, <code>BPM</code>, <code>Dedicado_Por</code>.<br>
-                2. Compartilhe a planilha como <strong>"Qualquer pessoa com o link pode ler"</strong>.<br>
-                3. Na coluna do link, cole o link de compartilhamento do arquivo de áudio no Google Drive (ex: <em>https://drive.google.com/file/d/...</em>).<br>
-                4. Cole o link da sua planilha abaixo e clique em Salvar!
-            </div>
-
-            <div class="form-group">
-                <label for="input-sheet-url">URL ou ID da Planilha do Google:</label>
-                <input type="text" class="form-input" id="input-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/SEU_ID_AQUI/edit...">
-            </div>
-
-            <div class="form-group">
-                <label for="input-sheet-name">Nome da Aba (Opcional - ex: Pagina1):</label>
-                <input type="text" class="form-input" id="input-sheet-name" placeholder="Deixe em branco para usar a primeira aba">
-            </div>
-
-            <div class="modal-actions">
-                <button class="btn-secondary" id="btn-test-sheet">Testar Conexão</button>
-                <button class="btn-primary" id="btn-save-sheet">Salvar e Sincronizar</button>
-            </div>
-        </div>
     </div>
 
     <!-- Container de Notificações Toast -->

@@ -9,7 +9,7 @@ const tracks = SheetsManager.parseCSV(mockCSV);
 console.log('✅ Resultado do Teste de Parse da Planilha:');
 console.log(JSON.stringify(tracks, null, 2));
 
-if (tracks.length === 2 && tracks[0].url.includes('docs.google.com') && tracks[0].title === 'Never Gonna Give You Up') {
+if (tracks.length === 2 && tracks[0].url.includes('drive.usercontent.google.com') && tracks[0].title === 'Never Gonna Give You Up') {
     console.log('\n🎉 TESTE PASSOU COM 100% DE SUCESSO!');
 } else {
     console.error('❌ Falha no teste.');

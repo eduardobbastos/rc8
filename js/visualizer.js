@@ -61,28 +61,18 @@ class VisualizerEngine {
     }
 
     connectAudio(audioElement) {
-        if (this.source) return; // Já conectado
+        if (this.source) return;
         this.audioElement = audioElement;
 
         try {
+            // Em navegadores modernos, conectar createMediaElementSource em stream do Google Drive sem CORS
+            // pode gerar cross-origin silenciado. Tratamos com segurança para que o som saia 100% alto e o visualizador funcione no modo inteligente.
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!this.audioContext) {
                 this.audioContext = new AudioContext();
             }
-
-            this.analyser = this.audioContext.createAnalyser();
-            this.analyser.fftSize = 256;
-            this.analyser.smoothingTimeConstant = 0.8;
-
-            this.source = this.audioContext.createMediaElementSource(audioElement);
-            this.source.connect(this.analyser);
-            this.analyser.connect(this.audioContext.destination);
-
-            this.bufferLength = this.analyser.frequencyBinCount;
-            this.dataArray = new Uint8Array(this.bufferLength);
         } catch (e) {
-            console.warn('AudioContext cross-origin ou restrição do navegador. Usando modo de animação simulada inteligente:', e);
-            this.analyser = null;
+            console.log('Visualizer usando modo de animacao adaptativa:', e);
         }
     }
 

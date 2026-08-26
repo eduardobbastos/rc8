@@ -7,7 +7,7 @@ class RC8Player {
     constructor() {
         this.audio = new Audio();
         this.audio.preload = 'auto';
-        this.audio.crossOrigin = 'anonymous';
+        // Nao define crossOrigin para permitir streaming direto do Google Drive sem restricao de CORS
 
         this.playlist = [];
         this.currentIndex = 0;

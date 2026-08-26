@@ -4,15 +4,16 @@
  */
 
 const SheetsManager = {
-    // Configurações padrão
-    defaultSheetId: '1gEIOwDGpCtNSwVOehMKo9A1Arz9dMCOf', // ID extraído da URL fornecida ou customizável
+    // Configuração permanente oficial da planilha da Rádio RC8
+    defaultSheetId: '15ajmPTWT7Rz0TIOet-K8RCzHphrnAEYjpOeBWhuvFqY',
+    defaultSheetUrl: 'https://docs.google.com/spreadsheets/d/15ajmPTWT7Rz0TIOet-K8RCzHphrnAEYjpOeBWhuvFqY/edit?gid=0#gid=0',
     storageKey: 'rc8_sheet_config',
     cacheKey: 'rc8_cached_playlist',
     
     // Configuração atual
     config: {
-        sheetUrl: '',
-        sheetId: '',
+        sheetUrl: 'https://docs.google.com/spreadsheets/d/15ajmPTWT7Rz0TIOet-K8RCzHphrnAEYjpOeBWhuvFqY/edit?gid=0#gid=0',
+        sheetId: '15ajmPTWT7Rz0TIOet-K8RCzHphrnAEYjpOeBWhuvFqY',
         sheetName: '',
         autoSyncIntervalMinutes: 5,
         directAudioFallback: true
@@ -22,58 +23,14 @@ const SheetsManager = {
     demoTracks: [
         {
             id: 'demo-1',
-            title: 'Can\'t Be Touched (Roy Jones Jr Remix)',
-            artist: 'Roy Jones Jr / Bodybuilder Gym',
-            url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=workout-electronic-future-bass-113264.mp3',
-            bpm: 135,
-            genre: 'Workout Bass',
-            duration: '03:12',
+            title: 'The Kids Aren\'t Alright',
+            artist: 'The Offspring',
+            url: 'https://drive.usercontent.google.com/download?id=1TcJp7NxastosE_nQBQT7Sv-9g3Ow3unl&export=download',
+            bpm: 138,
+            genre: 'Workout Rock',
+            duration: '02:59',
             cover: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400&q=80',
-            dedication: 'Turma das 8h - Aquecimento Pesado'
-        },
-        {
-            id: 'demo-2',
-            title: 'Beast Mode On (Hard Electro)',
-            artist: 'Cyber Athlete',
-            url: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=sport-electro-future-bass-10874.mp3',
-            bpm: 140,
-            genre: 'CrossFit Electro',
-            duration: '02:48',
-            cover: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80',
-            dedication: 'Box RC8 - No Pain No Gain'
-        },
-        {
-            id: 'demo-3',
-            title: 'Hardcore WOD Energy',
-            artist: 'Heavy Power Beat',
-            url: 'https://cdn.pixabay.com/download/audio/2021/08/04/audio_341f237bf3.mp3?filename=action-sport-rock-power-11881.mp3',
-            bpm: 150,
-            genre: 'Gym Rock / Beat',
-            duration: '03:05',
-            cover: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80',
-            dedication: 'Murph WOD - Resenha Pura'
-        },
-        {
-            id: 'demo-4',
-            title: 'Adrenaline Rush (Trap Metal)',
-            artist: 'Titanium Workout',
-            url: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=energetic-hip-hop-trap-9860.mp3',
-            bpm: 145,
-            genre: 'Trap Workout',
-            duration: '02:30',
-            cover: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400&q=80',
-            dedication: 'Coach 8:00 - Foco Total'
-        },
-        {
-            id: 'demo-5',
-            title: 'Midnight PR Heavy Drop',
-            artist: 'Kettlebell Kings',
-            url: 'https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f792cb.mp3?filename=ticking-clock-action-trailer-122971.mp3',
-            bpm: 160,
-            genre: 'High Intensity',
-            duration: '02:55',
-            cover: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80',
-            dedication: 'Sprint Final 8h'
+            dedication: 'Turma das 8h - Aquecimento'
         }
     ],
 
@@ -90,6 +47,10 @@ const SheetsManager = {
                 console.error('Erro ao ler config da planilha:', e);
             }
         }
+        // Garante que o sheetId padrão sempre tenha precedência se estiver vazio
+        if (!this.config.sheetId) {
+            this.config.sheetId = this.defaultSheetId;
+        }
     },
 
     saveConfig(config) {
@@ -101,26 +62,22 @@ const SheetsManager = {
      * Extrai o ID de uma URL do Google Sheets ou Drive
      */
     extractSheetId(input) {
-        if (!input) return '';
+        if (!input) return this.defaultSheetId;
         input = input.trim();
-        // Se for uma URL completa de planilha
         const matchSheet = input.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
         if (matchSheet) return matchSheet[1];
         
-        // Se for uma URL de pasta do Google Drive
         const matchFolder = input.match(/\/folders\/([a-zA-Z0-9-_]+)/);
         if (matchFolder) return matchFolder[1];
 
-        // Se for URL de arquivo do drive
         const matchFile = input.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
         if (matchFile) return matchFile[1];
 
-        // Se já for o ID puro
         if (/^[a-zA-Z0-9-_]{20,}$/.test(input)) {
             return input;
         }
 
-        return input;
+        return this.defaultSheetId;
     },
 
     /**
@@ -130,7 +87,7 @@ const SheetsManager = {
         if (!url) return '';
         url = url.trim();
 
-        // Se já for uma URL direta de MP3 ou áudio
+        // Se já for uma URL direta de áudio (.mp3, .m4a, etc.)
         if (url.startsWith('http') && (url.includes('.mp3') || url.includes('.m4a') || url.includes('.wav') || url.includes('.ogg'))) {
             return url;
         }
@@ -150,8 +107,8 @@ const SheetsManager = {
         }
 
         if (fileId) {
-            // URL de download direto do Google Drive que funciona perfeitamente com a tag <audio>
-            return `https://docs.google.com/uc?export=download&id=${fileId}`;
+            // URL de download direto oficial do Google Drive que toca direto na tag <audio> sem bloquear CORS
+            return `https://drive.usercontent.google.com/download?id=${fileId}&export=download`;
         }
 
         return url;
@@ -202,16 +159,18 @@ const SheetsManager = {
 
         if (!csvData || csvData.trim().length === 0 || csvData.includes('<!DOCTYPE html>')) {
             // Caso a planilha esteja privada ou formato inválido
-            const cached = localStorage.getItem(this.cacheKey);
-            if (cached) {
-                try {
-                    const cachedTracks = JSON.parse(cached);
-                    return {
-                        source: 'cache',
-                        tracks: cachedTracks,
-                        message: 'Carregado do cache local. Verifique se a planilha está com acesso público.'
-                    };
-                } catch(e){}
+            if (typeof localStorage !== 'undefined') {
+                const cached = localStorage.getItem(this.cacheKey);
+                if (cached) {
+                    try {
+                        const cachedTracks = JSON.parse(cached);
+                        return {
+                            source: 'cache',
+                            tracks: cachedTracks,
+                            message: 'Carregado do cache local. Verifique se a planilha está com acesso público.'
+                        };
+                    } catch(e){}
+                }
             }
 
             return {
@@ -225,7 +184,9 @@ const SheetsManager = {
         const parsedTracks = this.parseCSV(csvData);
 
         if (parsedTracks.length > 0) {
-            localStorage.setItem(this.cacheKey, JSON.stringify(parsedTracks));
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem(this.cacheKey, JSON.stringify(parsedTracks));
+            }
             return {
                 source: 'live_sheet',
                 tracks: parsedTracks,
