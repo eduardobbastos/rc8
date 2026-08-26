@@ -371,63 +371,86 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 11. Modal de Configurações da Planilha
+    // 11. Modal de Configurações da Planilha (Acesso Oculto)
     function openModal() {
-        elements.inputSheetUrl.value = SheetsManager.config.sheetUrl || SheetsManager.config.sheetId || '';
-        elements.inputSheetName.value = SheetsManager.config.sheetName || '';
-        elements.settingsModal.classList.add('open');
+        if (elements.inputSheetUrl) elements.inputSheetUrl.value = SheetsManager.config.sheetUrl || SheetsManager.config.sheetId || '';
+        if (elements.inputSheetName) elements.inputSheetName.value = SheetsManager.config.sheetName || '';
+        if (elements.settingsModal) elements.settingsModal.classList.add('open');
     }
 
     function closeModal() {
-        elements.settingsModal.classList.remove('open');
+        if (elements.settingsModal) elements.settingsModal.classList.remove('open');
     }
 
-    elements.btnOpenSettings.addEventListener('click', openModal);
-    elements.navSettings.addEventListener('click', openModal);
-    elements.btnCloseModal.addEventListener('click', closeModal);
-    elements.btnSyncSheet.addEventListener('click', () => syncSheetsData(true));
-
-    elements.settingsModal.addEventListener('click', (e) => {
-        if (e.target === elements.settingsModal) closeModal();
-    });
-
-    elements.btnSaveSheet.addEventListener('click', async () => {
-        const urlInput = elements.inputSheetUrl.value.trim();
-        const nameInput = elements.inputSheetName.value.trim();
-
-        if (!urlInput) {
-            showToast('⚠️ Por favor, insira a URL ou ID da planilha.');
-            return;
-        }
-
-        const sheetId = SheetsManager.extractSheetId(urlInput);
-        SheetsManager.saveConfig({
-            sheetUrl: urlInput,
-            sheetId: sheetId,
-            sheetName: nameInput
+    // Atalho secreto: 5 toques rápidos no logo "RC8" abre a configuração oculta
+    let logoTapCount = 0;
+    let logoTapTimer = null;
+    const logoBadge = document.querySelector('.logo-badge');
+    if (logoBadge) {
+        logoBadge.addEventListener('click', () => {
+            logoTapCount++;
+            clearTimeout(logoTapTimer);
+            if (logoTapCount >= 5) {
+                logoTapCount = 0;
+                window.location.href = 'admin.html';
+            } else {
+                logoTapTimer = setTimeout(() => {
+                    logoTapCount = 0;
+                }, 2000);
+            }
         });
+    }
 
-        closeModal();
-        await syncSheetsData(true);
-    });
+    if (elements.btnCloseModal) elements.btnCloseModal.addEventListener('click', closeModal);
+    if (elements.btnSyncSheet) elements.btnSyncSheet.addEventListener('click', () => syncSheetsData(true));
 
-    elements.btnTestSheet.addEventListener('click', async () => {
-        const urlInput = elements.inputSheetUrl.value.trim();
-        if (!urlInput) {
-            showToast('⚠️ Insira um link primeiro.');
-            return;
-        }
+    if (elements.settingsModal) {
+        elements.settingsModal.addEventListener('click', (e) => {
+            if (e.target === elements.settingsModal) closeModal();
+        });
+    }
 
-        const sheetId = SheetsManager.extractSheetId(urlInput);
-        showToast('🔍 Testando leitura da planilha...');
-        const res = await SheetsManager.fetchPlaylist(sheetId);
-        
-        if (res.source === 'live_sheet') {
-            showToast(`✅ Sucesso! ${res.tracks.length} faixas detectadas.`);
-        } else {
-            showToast('⚠️ Não foi possível ler a planilha. Verifique se o compartilhamento está público.');
-        }
-    });
+    if (elements.btnSaveSheet) {
+        elements.btnSaveSheet.addEventListener('click', async () => {
+            const urlInput = elements.inputSheetUrl.value.trim();
+            const nameInput = elements.inputSheetName.value.trim();
+
+            if (!urlInput) {
+                showToast('⚠️ Por favor, insira a URL ou ID da planilha.');
+                return;
+            }
+
+            const sheetId = SheetsManager.extractSheetId(urlInput);
+            SheetsManager.saveConfig({
+                sheetUrl: urlInput,
+                sheetId: sheetId,
+                sheetName: nameInput
+            });
+
+            closeModal();
+            await syncSheetsData(true);
+        });
+    }
+
+    if (elements.btnTestSheet) {
+        elements.btnTestSheet.addEventListener('click', async () => {
+            const urlInput = elements.inputSheetUrl.value.trim();
+            if (!urlInput) {
+                showToast('⚠️ Insira um link primeiro.');
+                return;
+            }
+
+            const sheetId = SheetsManager.extractSheetId(urlInput);
+            showToast('🔍 Testando leitura da planilha...');
+            const res = await SheetsManager.fetchPlaylist(sheetId);
+            
+            if (res.source === 'live_sheet') {
+                showToast(`✅ Sucesso! ${res.tracks.length} faixas detectadas.`);
+            } else {
+                showToast('⚠️ Não foi possível ler a planilha. Verifique se o compartilhamento está público.');
+            }
+        });
+    }
 
     // 12. Inicialização e Auto-Sync
     syncSheetsData(false);
