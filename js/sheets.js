@@ -288,10 +288,15 @@ const SheetsManager = {
         // Identifica os cabeçalhos
         const headers = lines[0].map(h => h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim());
         
-        // Mapeia índices de colunas prováveis
+        // Mapeia índices de colunas com prioridade inteligente
         const titleIdx = headers.findIndex(h => h.includes('titulo') || h.includes('musica') || h.includes('nome') || h.includes('track') || h.includes('title'));
         const artistIdx = headers.findIndex(h => h.includes('artista') || h.includes('cantor') || h.includes('banda') || h.includes('artist'));
-        const urlIdx = headers.findIndex(h => h.includes('link') || h.includes('drive') || h.includes('url') || h.includes('audio') || h.includes('arquivo'));
+        
+        // Prioriza coluna de áudio direto / Google Drive
+        let driveUrlIdx = headers.findIndex(h => (h.includes('drive') || h.includes('audio') || h.includes('arquivo') || h.includes('stream')) && !h.includes('youtube'));
+        let youtubeUrlIdx = headers.findIndex(h => h.includes('youtube'));
+        let genericUrlIdx = headers.findIndex(h => h.includes('link') || h.includes('url'));
+
         const bpmIdx = headers.findIndex(h => h.includes('bpm') || h.includes('ritmo') || h.includes('velocidade'));
         const genreIdx = headers.findIndex(h => h.includes('genero') || h.includes('estilo') || h.includes('style') || h.includes('genre'));
         const coverIdx = headers.findIndex(h => h.includes('capa') || h.includes('cover') || h.includes('foto') || h.includes('imagem') || h.includes('image'));
@@ -303,10 +308,14 @@ const SheetsManager = {
         for (let i = 1; i < lines.length; i++) {
             const r = lines[i];
             
-            // Link de áudio (se urlIdx não foi encontrado pelo nome, pega a primeira coluna com http ou id longo)
+            // Escolhe a melhor URL disponível (Drive > Generic > YouTube)
             let rawUrl = '';
-            if (urlIdx !== -1 && r[urlIdx]) {
-                rawUrl = r[urlIdx];
+            if (driveUrlIdx !== -1 && r[driveUrlIdx] && r[driveUrlIdx].startsWith('http')) {
+                rawUrl = r[driveUrlIdx];
+            } else if (genericUrlIdx !== -1 && r[genericUrlIdx] && r[genericUrlIdx].startsWith('http')) {
+                rawUrl = r[genericUrlIdx];
+            } else if (youtubeUrlIdx !== -1 && r[youtubeUrlIdx] && r[youtubeUrlIdx].startsWith('http')) {
+                rawUrl = r[youtubeUrlIdx];
             } else {
                 const foundUrl = r.find(col => col.startsWith('http') || col.includes('drive.google.com') || /^[a-zA-Z0-9-_]{25,}$/.test(col));
                 if (foundUrl) rawUrl = foundUrl;
@@ -351,4 +360,9 @@ const SheetsManager = {
     }
 };
 
-window.SheetsManager = SheetsManager;
+if (typeof window !== 'undefined') {
+    window.SheetsManager = SheetsManager;
+}
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = SheetsManager;
+}
