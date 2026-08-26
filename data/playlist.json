@@ -1,6 +1,6 @@
 {
   "updatedAt": "/home/ebastos/cr8/data/playlist.json",
-  "totalTracks": 4,
+  "totalTracks": 5,
   "tracks": [
     {
       "id": "rc8-1",
@@ -55,6 +55,20 @@
       "cover": "https://img.youtube.com/vi/_CL6n0FJZpk/hqdefault.jpg",
       "youtubeUrl": "https://www.youtube.com/watch?v=_CL6n0FJZpk",
       "youtubeId": "_CL6n0FJZpk",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-5",
+      "title": "Till I Collapse",
+      "artist": "Eminem",
+      "bpm": 138,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "audio/Eminem - Till I Collapse.mp3",
+      "url": "audio/Eminem - Till I Collapse.mp3",
+      "cover": "https://img.youtube.com/vi/ytQ5CYE1VZw/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ytQ5CYE1VZw",
+      "youtubeId": "ytQ5CYE1VZw",
       "driveUrl": "",
       "dedication": "Resenha das 8h"
     }
