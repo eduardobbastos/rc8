@@ -473,6 +473,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // 12. Inicialização e Auto-Sync
     syncSheetsData(false);
 
+    // 13. Registra o Service Worker (modo offline)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').then((reg) => {
+                console.log('✅ Service Worker RC8 registrado. Áudio pode ficar salvo para offline.');
+                // Notifica mudanças de conexão
+                window.addEventListener('online', () => showToast('📶 De volta ao online!'));
+                window.addEventListener('offline', () => showToast('📴 Offline — tocando músicas baixadas.'));
+            }).catch((err) => {
+                console.warn('Service Worker não registrado:', err);
+            });
+        });
+    }
+
     // Auto-refresh a cada 5 minutos para carregar novas músicas que a turma postar
     setInterval(() => {
         syncSheetsData(false);

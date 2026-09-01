@@ -1014,6 +1014,116 @@ body {
 }
 
 .track-play-icon {
+    /* mantém o padrão atual */
+}
+
+/* Botão de Download Offline por faixa */
+.track-dl-btn {
+    background: transparent;
+    border: 1px solid rgba(0, 255, 135, 0.4);
+    color: var(--neon-green);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+.track-dl-btn:hover {
+    background: rgba(0, 255, 135, 0.15);
+}
+.track-dl-btn.downloaded {
+    color: var(--neon-green);
+    border-color: var(--neon-green);
+    background: rgba(0, 255, 135, 0.2);
+}
+.track-dl-btn.downloading {
+    opacity: 0.6;
+    pointer-events: none;
+    animation: spinDl 1s linear infinite;
+}
+@keyframes spinDl {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* Barra de progresso de download offline individual */
+.track-dl-progress {
+    width: 60px;
+    height: 4px;
+    margin-left: 0.6rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.track-dl-progress-fill {
+    height: 100%;
+    background: var(--neon-green);
+    width: 0%;
+    transition: width 0.2s ease;
+}
+
+/* Aviso/banner offline */
+.rc8-offline-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    margin: 0.6rem 1.25rem 0;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 107, 0, 0.12);
+    border: 1px solid var(--neon-orange);
+    color: #ffe2c4;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 40;
+}
+
+/* Barra de progresso global (download múltiplo) */
+.rc8-dl-overlay {
+    position: fixed;
+    bottom: calc(var(--bottom-nav-height) + 16px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 70;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-md);
+    padding: 0.8rem 1rem;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 240px;
+    max-width: 90vw;
+    backdrop-filter: blur(10px);
+}
+.rc8-dl-overlay-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+}
+.rc8-dl-overlay-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.rc8-dl-overlay-fill {
+    height: 100%;
+    background: var(--grad-primary);
+    width: 0%;
+    transition: width 0.2s ease;
+}
+.rc8-dl-overlay-pct {
+    font-size: 0.75rem;
+    color: #a0aec0;
+}
     color: var(--neon-green);
     font-size: 1.1rem;
 }
