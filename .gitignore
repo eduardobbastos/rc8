@@ -1,0 +1,10 @@
+# Cookies autenticados do YouTube (NUNCA commitar)
+**/cookies.txt
+cookies.txt
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs locais
+logs/

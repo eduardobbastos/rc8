@@ -80,6 +80,28 @@ def find_existing_audio_file(title, artist):
             
     return None
 
+def get_cookies_path():
+    """Retorna o caminho do arquivo de cookies do YouTube, se existir.
+    Procura em: ~/.hermes/yt_cookies.txt, ~/.hermes/cookies.txt, ou 
+    <repo>/cookies.txt (todos fora do git). O Actions não tem, então retorna None."""
+    candidates = [
+        os.path.join(os.path.expanduser("~"), ".hermes", "yt_cookies.txt"),
+        os.path.join(os.path.expanduser("~"), ".hermes", "cookies.txt"),
+        os.path.join(BASE_DIR, "cookies.txt"),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return None
+
+def ydl_opts_with_cookies(base_opts):
+    """Adiciona cookies ao dicionário de opções do yt-dlp se o arquivo existir."""
+    cp = get_cookies_path()
+    if cp:
+        base_opts = dict(base_opts)
+        base_opts["cookiefile"] = cp
+    return base_opts
+
 def download_audio_from_youtube(target_source, desired_filename):
     out_template = os.path.join(AUDIO_DIR, desired_filename + '.%(ext)s')
     ydl_opts = {
@@ -94,6 +116,7 @@ def download_audio_from_youtube(target_source, desired_filename):
         'quiet': False,
         'no_warnings': True
     }
+    ydl_opts = ydl_opts_with_cookies(ydl_opts)
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
