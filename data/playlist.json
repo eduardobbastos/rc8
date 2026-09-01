@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-09-01T11:55:58+00:00",
-  "totalTracks": 8,
+  "updatedAt": "2026-09-01T12:22:12+00:00",
+  "totalTracks": 9,
   "tracks": [
     {
       "id": "rc8-1",
@@ -111,6 +111,20 @@
       "cover": "https://img.youtube.com/vi/VG3JsmOmDqw/hqdefault.jpg",
       "youtubeUrl": "https://www.youtube.com/watch?v=VG3JsmOmDqw",
       "youtubeId": "VG3JsmOmDqw",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-9",
+      "title": "Eye Of The Tiger (Official HD Video)",
+      "artist": "Survivor",
+      "bpm": 109,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "",
+      "url": "https://www.youtube.com/watch?v=btPJPFnesV4",
+      "cover": "https://img.youtube.com/vi/btPJPFnesV4/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=btPJPFnesV4",
+      "youtubeId": "btPJPFnesV4",
       "driveUrl": "",
       "dedication": "Resenha das 8h"
     }
