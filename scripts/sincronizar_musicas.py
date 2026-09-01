@@ -125,7 +125,7 @@ def download_audio_from_youtube(target_source, desired_filename):
     ]
     cp = get_cookies_path()
     if cp:
-        cmd += ["--cookiefile", cp, "--js-runtime", "node", "--remote-components", "ejs:github"]
+        cmd += ["--cookies", cp, "--js-runtime", "node", "--remote-components", "ejs:github"]
 
     download_query = target_source if target_source.startswith('http') else f"ytsearch1:{target_source}"
     cmd.append(download_query)
@@ -136,7 +136,7 @@ def download_audio_from_youtube(target_source, desired_filename):
             # Sem cookies/EJS (ex.: GitHub Actions): tenta de novo sem EJS
             cmd_clean = []
             i = 0
-            skip = {"--cookiefile", "--js-runtime", "--remote-components"}
+            skip = {"--cookies", "--js-runtime", "--remote-components"}
             while i < len(cmd):
                 if cmd[i] in skip:
                     i += 2  # pula flag + valor
