@@ -679,6 +679,69 @@ body {
     color: #ffffff;
 }
 
+/* Painel de Configuração do Timer Custom */
+.timer-custom-config {
+    width: 100%;
+    max-width: 320px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem;
+    margin-bottom: 1.1rem;
+    box-sizing: border-box;
+}
+
+.custom-config-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.custom-config-row label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.72rem;
+    color: #a0aec0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    gap: 0.25rem;
+}
+
+.custom-config-row input {
+    width: 76px;
+    padding: 0.45rem 0.4rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.custom-config-row input:focus {
+    outline: none;
+    border-color: var(--neon-green);
+    box-shadow: 0 0 8px rgba(0, 255, 135, 0.3);
+}
+
+.custom-config-row .btn-timer.start {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.85rem;
+}
+
+.custom-config-hint {
+    font-size: 0.72rem;
+    color: #718096;
+    margin-top: 0.6rem;
+    line-height: 1.4;
+}
+
 /* Playlist / Tabela da Turma */
 .playlist-header {
     display: flex;

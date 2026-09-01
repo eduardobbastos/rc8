@@ -56,6 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btnTimerPause: document.getElementById('btn-timer-pause'),
         btnTimerReset: document.getElementById('btn-timer-reset'),
         modeChips: document.querySelectorAll('.mode-chip'),
+        timerCustomConfig: document.getElementById('timer-custom-config'),
+        customWork: document.getElementById('custom-work'),
+        customRest: document.getElementById('custom-rest'),
+        customRounds: document.getElementById('custom-rounds'),
+        btnSaveCustom: document.getElementById('btn-save-custom'),
 
         // Header & Modais
         btnSyncSheet: document.getElementById('btn-sync-sheet'),
@@ -324,6 +329,11 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.timerPhase.className = `timer-phase-tag ${state.isWorkPhase ? '' : 'rest'}`;
             elements.timerRound.textContent = `Round ${state.currentRound} de ${state.totalRounds}`;
             elements.timerBox.className = `timer-display-box ${state.isWorkPhase ? 'work-phase' : 'rest-phase'}`;
+        } else if (state.mode === 'custom') {
+            elements.timerPhase.textContent = state.status === 'countdown' ? `PREP ${state.countdownValue}` : (state.isWorkPhase ? '🔥 WORK' : '💤 REST');
+            elements.timerPhase.className = `timer-phase-tag ${state.isWorkPhase ? '' : 'rest'}`;
+            elements.timerRound.textContent = `Repetição ${state.currentRound} de ${state.totalRounds}`;
+            elements.timerBox.className = `timer-display-box ${state.isWorkPhase ? 'work-phase' : 'rest-phase'}`;
         } else if (state.mode === 'emom') {
             elements.timerPhase.textContent = state.status === 'countdown' ? `PREP ${state.countdownValue}` : '⚡ EMOM';
             elements.timerRound.textContent = `Minuto ${state.currentRound} de ${state.totalRounds}`;
@@ -364,7 +374,30 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.modeChips.forEach(c => c.classList.remove('active'));
             chip.classList.add('active');
             wodTimer.setMode(chip.dataset.mode);
+
+            // Mostra/osconde o painel de programação do timer custom
+            const customPanel = elements.timerCustomConfig;
+            if (chip.dataset.mode === 'custom') {
+                const s = wodTimer.getCustomSettings();
+                elements.customWork.value = s.work;
+                elements.customRest.value = s.rest;
+                elements.customRounds.value = s.rounds;
+                customPanel.style.display = 'flex';
+                customPanel.style.flexDirection = 'column';
+            } else {
+                customPanel.style.display = 'none';
+            }
         });
+    });
+
+    // Salva as configurações do timer custom (programável)
+    elements.btnSaveCustom.addEventListener('click', () => {
+        wodTimer.saveCustomSettings(
+            elements.customWork.value,
+            elements.customRest.value,
+            elements.customRounds.value
+        );
+        showToast('⚙️ Timer custom programado e salvo!');
     });
 
     // 10. Compartilhar / Web Share API

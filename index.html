@@ -183,6 +183,24 @@
                             <button class="mode-chip" data-mode="emom">EMOM (10 Min)</button>
                             <button class="mode-chip" data-mode="amrap">AMRAP (12 Min)</button>
                             <button class="mode-chip" data-mode="stopwatch">CRONÔMETRO</button>
+                            <button class="mode-chip" data-mode="custom">⚙️ CUSTOM</button>
+                        </div>
+
+                        <!-- Painel de programação do timer custom -->
+                        <div class="timer-custom-config" id="timer-custom-config" style="display:none;">
+                            <div class="custom-config-row">
+                                <label>⏱ Trabalho (s)
+                                    <input type="number" id="custom-work" min="1" max="3600" step="5">
+                                </label>
+                                <label>💤 Descanso (s)
+                                    <input type="number" id="custom-rest" min="0" max="3600" step="5">
+                                </label>
+                                <label>🔁 Repetições
+                                    <input type="number" id="custom-rounds" min="1" max="200" step="1">
+                                </label>
+                                <button class="btn-timer start" id="btn-save-custom" title="Salvar programação">Salvar</button>
+                            </div>
+                            <p class="custom-config-hint">Salvo automaticamente no dispositivo. O timer executa Trabalho → Descanso → próxima repetição.</p>
                         </div>
 
                         <div class="timer-display-box work-phase" id="timer-box">

@@ -9,6 +9,7 @@ import sys
 import csv
 import json
 import re
+import subprocess
 from datetime import datetime, timezone
 import urllib.request
 import yt_dlp
@@ -95,48 +96,81 @@ def get_cookies_path():
     return None
 
 def ydl_opts_with_cookies(base_opts):
-    """Adiciona cookies ao dicionário de opções do yt-dlp se o arquivo existir."""
+    """Adiciona cookies + EJS solver ao dicionário de opções do yt-dlp.
+    Cookies contornam o anti-bot do YouTube (quando presentes); o EJS remote
+    component resolve os desafios de assinatura/'n' que destravam os formatos."""
     cp = get_cookies_path()
     if cp:
         base_opts = dict(base_opts)
         base_opts["cookiefile"] = cp
+        # Habilita o challenge solver JS (destrava formatos); node está instalado
+        base_opts["jsruntime"] = "node"
+        base_opts["compat_opts"] = ["allow-ecma-plugins"]
     return base_opts
 
 def download_audio_from_youtube(target_source, desired_filename):
+    """Baixa o áudio usando a CLI do yt-dlp via subprocess.
+    A CLI reconhece o runtime node + remote-components ejs:github, que é a
+    combinação que destrava o download do YouTube quando há cookies locais.
+    No GitHub Actions (sem cookies) usa a mesma CLI, que ainda tem mais chance
+    de sucesso que a API Python nesses casos."""
     out_template = os.path.join(AUDIO_DIR, desired_filename + '.%(ext)s')
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'outtmpl': out_template,
-        'noplaylist': True,
-        'quiet': False,
-        'no_warnings': True
-    }
-    ydl_opts = ydl_opts_with_cookies(ydl_opts)
-    
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        try:
-            download_query = target_source if target_source.startswith('http') else f"ytsearch1:{target_source}"
-            info = ydl.extract_info(download_query, download=True)
-            mp3_path = os.path.join(AUDIO_DIR, desired_filename + '.mp3')
-            if os.path.exists(mp3_path):
-                return desired_filename + '.mp3'
-            
-            if 'entries' in info and len(info['entries']) > 0:
-                info = info['entries'][0]
-                
-            base_name = ydl.prepare_filename(info)
-            actual_mp3 = os.path.splitext(base_name)[0] + '.mp3'
-            if os.path.exists(actual_mp3):
-                return os.path.basename(actual_mp3)
-            return None
-        except Exception as err:
-            print(f"❌ Erro ao baixar áudio: {err}")
-            return None
+    cmd = [
+        "yt-dlp",
+        "-f", "bestaudio/best",
+        "-x", "--audio-format", "mp3", "--audio-quality", "192",
+        "-o", out_template,
+        "--no-playlist",
+        "--no-warnings",
+    ]
+    cp = get_cookies_path()
+    if cp:
+        cmd += ["--cookiefile", cp, "--js-runtime", "node", "--remote-components", "ejs:github"]
+
+    download_query = target_source if target_source.startswith('http') else f"ytsearch1:{target_source}"
+    cmd.append(download_query)
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            # Sem cookies/EJS (ex.: GitHub Actions): tenta de novo sem EJS
+            cmd_clean = []
+            i = 0
+            skip = {"--cookiefile", "--js-runtime", "--remote-components"}
+            while i < len(cmd):
+                if cmd[i] in skip:
+                    i += 2  # pula flag + valor
+                    continue
+                cmd_clean.append(cmd[i])
+                i += 1
+            # garante a URL no final
+            cmd_clean = [c for c in cmd_clean if not c.startswith("ytsearch") and c != download_query]
+            cmd_clean.append(download_query)
+            result = subprocess.run(cmd_clean, capture_output=True, text=True)
+            if result.returncode != 0:
+                print(f"❌ Erro ao baixar áudio: {result.stderr.strip()[-400:]}")
+                return None
+    except Exception as err:
+        print(f"❌ Erro ao executar yt-dlp: {err}")
+        return None
+
+    # localiza o arquivo mp3 gerado
+    mp3_path = os.path.join(AUDIO_DIR, desired_filename + '.mp3')
+    if os.path.exists(mp3_path):
+        return desired_filename + '.mp3'
+
+    # fallback: procura qualquer mp3 que corresponda
+    for f in os.listdir(AUDIO_DIR):
+        if f.endswith('.mp3') and sanitize_filename(desired_filename).lower().split('.')[0] in f.lower():
+            return f
+
+    # último recurso: arquivo mais recente em AUDIO_DIR
+    try:
+        newest = max((os.path.join(AUDIO_DIR, f) for f in os.listdir(AUDIO_DIR) if f.endswith('.mp3')),
+                     key=os.path.getmtime)
+        return os.path.basename(newest)
+    except ValueError:
+        return None
 
 def main():
     rows = get_sheet_data()
