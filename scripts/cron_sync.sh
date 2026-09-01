@@ -4,8 +4,9 @@
 # Resenha do Cross Turma das 8 Horas
 # ==============================================================================
 
-# Diretório base do projeto
-PROJECT_DIR="/home/ebastos/cr8"
+# Diretório base do projeto (derivado da localização deste script)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR" || exit 1
 
 # Garante que os caminhos do Python, Git e FFmpeg estejam disponíveis no ambiente do cron

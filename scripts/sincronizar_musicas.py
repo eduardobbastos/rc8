@@ -9,6 +9,7 @@ import sys
 import csv
 import json
 import re
+from datetime import datetime, timezone
 import urllib.request
 import yt_dlp
 
@@ -123,25 +124,55 @@ def main():
     headers = [h.lower().strip() for h in rows[0]]
     print(f"📋 Cabeçalhos detectados: {headers}")
 
+    # Mapeia colunas por cabeçalho (ordem flexível), com fallback para a posição
+    # fixa histórica (0=yt, 1=titulo, 2=artista, 3=bpm, 4=status, 5=drive).
+    def find_col(keys):
+        for idx, h in enumerate(headers):
+            if any(k in h for k in keys):
+                return idx
+        return -1
+
+    col_yt      = find_col(["youtube", "link_youtube", "link_yt", "yt"])
+    col_title   = find_col(["titulo", "musica", "track", "title", "nome"])
+    col_artist  = find_col(["artista", "cantor", "banda", "artist"])
+    col_bpm     = find_col(["bpm", "ritmo", "velocidade"])
+    col_status  = find_col(["status"])
+    col_drive   = find_col(["link_google_drive", "drive", "audio", "arquivo", "stream", "link_drive"])
+
     playlist = []
     
     for i, row in enumerate(rows[1:], start=1):
         if not row or not any(row):
             continue
 
-        yt_link = row[0].strip() if len(row) > 0 else ''
-        title = row[1].strip() if len(row) > 1 and row[1].strip() else f"Faixa #{i}"
-        artist = row[2].strip() if len(row) > 2 and row[2].strip() else "Turma das 8h"
-        
+        def cell(idx, fallback=0):
+            if idx == -1:
+                return ''
+            return row[idx].strip() if len(row) > idx else ''
+
+        yt_link    = cell(col_yt) or cell(0)
+        title      = cell(col_title, 1) or (cell(1) if col_title == -1 else '') or f"Faixa #{i}"
+        artist     = cell(col_artist, 2) or (cell(2) if col_artist == -1 else '') or "Turma das 8h"
+        drive_link = cell(col_drive, 5) or (cell(5) if col_drive == -1 else '') or ''
+
         bpm = 138
-        if len(row) > 3 and row[3].strip():
+        bpm_raw = cell(col_bpm, 3) if col_bpm != -1 else cell(3)
+        if bpm_raw:
             try:
-                bpm = int(re.sub(r'\D', '', row[3])) or 138
+                bpm = int(re.sub(r'\D', '', bpm_raw)) or 138
             except:
                 bpm = 138
 
-        status = row[4].strip() if len(row) > 4 else 'OK'
-        drive_link = row[5].strip() if len(row) > 5 else ''
+        # Prioriza arquivo de áudio do Drive para o stream, fallback p/ YouTube
+        drive_id = extract_youtube_id(drive_link)  # reusa regex (aceita file/d/<id>)
+        if not drive_id:
+            m = re.search(r'(?:file/d/|id=|drive\.google\.com/[^ ]*\?id=)([a-zA-Z0-9_-]{15,})', drive_link)
+            if m:
+                drive_id = m.group(1)
+        if not drive_id and drive_link:
+            m = re.search(r'([a-zA-Z0-9_-]{25,})', drive_link)
+            if m:
+                drive_id = m.group(1)
         
         # 1. Extrai ou busca o ID do YouTube
         yt_id = extract_youtube_id(yt_link)
@@ -187,7 +218,7 @@ def main():
     json_path = os.path.join(DATA_DIR, "playlist.json")
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump({
-            "updatedAt": json_path,
+            "updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "totalTracks": len(playlist),
             "tracks": playlist
         }, f, indent=2, ensure_ascii=False)
