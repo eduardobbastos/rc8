@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-09-01T12:22:12+00:00",
-  "totalTracks": 9,
+  "updatedAt": "2026-09-01T12:31:23+00:00",
+  "totalTracks": 11,
   "tracks": [
     {
       "id": "rc8-1",
@@ -125,6 +125,34 @@
       "cover": "https://img.youtube.com/vi/btPJPFnesV4/hqdefault.jpg",
       "youtubeUrl": "https://www.youtube.com/watch?v=btPJPFnesV4",
       "youtubeId": "btPJPFnesV4",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-10",
+      "title": "Só por hoje | DVD Roque Marciano Ao Vivo",
+      "artist": "Detonautas",
+      "bpm": 138,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "",
+      "url": "https://www.youtube.com/watch?v=OR17lMhcbUc",
+      "cover": "https://img.youtube.com/vi/OR17lMhcbUc/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=OR17lMhcbUc",
+      "youtubeId": "OR17lMhcbUc",
+      "driveUrl": "",
+      "dedication": "Resenha das 8h"
+    },
+    {
+      "id": "rc8-11",
+      "title": "Na Sua Estante (Ao Vivo) | Matriz Ao Vivo na Bahia",
+      "artist": "Pitty",
+      "bpm": 138,
+      "genre": "Workout Rock / CrossFit",
+      "audioFile": "",
+      "url": "https://www.youtube.com/watch?v=QXYwKOq1c8E",
+      "cover": "https://img.youtube.com/vi/QXYwKOq1c8E/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=QXYwKOq1c8E",
+      "youtubeId": "QXYwKOq1c8E",
       "driveUrl": "",
       "dedication": "Resenha das 8h"
     }
