@@ -64,6 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Header & Modais
         btnSyncSheet: document.getElementById('btn-sync-sheet'),
+        btnTheme: document.getElementById('btn-theme'),
+        themePicker: document.getElementById('theme-picker'),
+        themeOptions: document.querySelectorAll('.theme-option'),
         btnOpenSettings: document.getElementById('btn-open-settings'),
         btnCloseModal: document.getElementById('btn-close-modal'),
         settingsModal: document.getElementById('settings-modal'),
@@ -422,6 +425,50 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.btnSyncSheet) {
         elements.btnSyncSheet.addEventListener('click', () => syncSheetsData(true));
     }
+
+    // 11b. Seletor de Temas
+    const THEME_KEY = 'rc8_theme';
+    const applyTheme = (theme) => {
+        if (theme && theme !== 'default') {
+            document.documentElement.setAttribute('data-theme', theme);
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        try { localStorage.setItem(THEME_KEY, theme || 'default'); } catch (e) {}
+    };
+    // Carrega o tema salvo no carregamento
+    try {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved) applyTheme(saved);
+    } catch (e) {}
+
+    const toggleThemePicker = (open) => {
+        const picker = elements.themePicker;
+        if (!picker) return;
+        picker.style.display = open ? 'flex' : 'none';
+    };
+
+    if (elements.btnTheme) {
+        elements.btnTheme.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = elements.themePicker.style.display !== 'none';
+            toggleThemePicker(!isOpen);
+        });
+    }
+    elements.themeOptions.forEach(opt => {
+        opt.addEventListener('click', () => {
+            applyTheme(opt.dataset.themeVal);
+            toggleThemePicker(false);
+            showToast(opt.querySelector('.theme-name')?.textContent + ' ativado!');
+        });
+    });
+    // Fecha ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (elements.themePicker && elements.themePicker.style.display !== 'none' &&
+            !e.target.closest('#btn-theme') && !e.target.closest('#theme-picker')) {
+            toggleThemePicker(false);
+        }
+    });
 
     // 12. Inicialização e Auto-Sync
     syncSheetsData(false);
