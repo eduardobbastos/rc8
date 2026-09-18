@@ -4,8 +4,8 @@
   "description": "Rádio Online Coletiva da Turma das 8 Horas - Música pro treino bom!",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#080a0f",
-  "theme_color": "#00FF87",
+  "background_color": "#050505",
+  "theme_color": "#FFD700",
   "orientation": "portrait-primary",
   "icons": [
     {

@@ -19,11 +19,13 @@ class VisualizerEngine {
         this.isPlaying = false;
         this.animationFrameId = null;
         
-        // Configurações visuais
-        this.themeColor1 = '#00FF87'; // Neon Green
-        this.themeColor2 = '#60EFFF'; // Electric Cyan
-        this.themeColor3 = '#FF6B00'; // Fiery Orange
-        
+        // Configurações visuais — lê do design system CSS para respeitar o tema ativo
+        const rootStyles = getComputedStyle(document.documentElement);
+        this.themeColor1 = rootStyles.getPropertyValue('--neon-green').trim() || '#FFD700';
+        this.themeColor2 = rootStyles.getPropertyValue('--neon-cyan').trim() || '#FFB300';
+        this.themeColor3 = rootStyles.getPropertyValue('--neon-orange').trim() || '#D4AF37';
+        this.themeAccentAlpha = rootStyles.getPropertyValue('--neon-green').trim() || '#FFD700';
+
         this.particles = [];
         this.numParticles = 45;
         this.bassValue = 0;
@@ -101,7 +103,7 @@ class VisualizerEngine {
         const height = this.canvas.height / (window.devicePixelRatio || 1);
 
         // Limpeza suave para criar efeito de rastro
-        this.ctx.fillStyle = 'rgba(10, 14, 22, 0.28)';
+        this.ctx.fillStyle = 'rgba(5, 5, 5, 0.28)';
         this.ctx.fillRect(0, 0, width, height);
 
         let frequencies = [];
@@ -189,7 +191,7 @@ class VisualizerEngine {
             const grad = this.ctx.createLinearGradient(x, y, x, y + barHeight);
             grad.addColorStop(0, this.themeColor2);
             grad.addColorStop(0.5, this.themeColor1);
-            grad.addColorStop(1, 'rgba(0, 255, 135, 0.1)');
+            grad.addColorStop(1, this.hexToRgba(this.themeColor1, 0.1));
 
             this.ctx.fillStyle = grad;
             this.ctx.shadowColor = this.themeColor1;
@@ -235,14 +237,25 @@ class VisualizerEngine {
 
         const radius = Math.min(width, height) * 0.4 * (1 + bass * 0.3);
         const grad = this.ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, radius);
-        grad.addColorStop(0, `rgba(0, 255, 135, ${bass * 0.15})`);
-        grad.addColorStop(0.7, `rgba(96, 239, 255, ${bass * 0.06})`);
-        grad.addColorStop(1, 'rgba(10, 14, 22, 0)');
+        grad.addColorStop(0, this.hexToRgba(this.themeColor1, bass * 0.15));
+        grad.addColorStop(0.7, this.hexToRgba(this.themeColor2, bass * 0.06));
+        grad.addColorStop(1, 'rgba(5, 5, 5, 0)');
 
         this.ctx.fillStyle = grad;
         this.ctx.beginPath();
         this.ctx.arc(width / 2, height / 2, radius, 0, Math.PI * 2);
         this.ctx.fill();
+    }
+
+    hexToRgba(hex, alpha) {
+        const clean = hex.replace('#', '');
+        const bigint = parseInt(clean.length === 3
+            ? clean.split('').map(c => c + c).join('')
+            : clean, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
     roundRect(x, y, w, h, r) {
