@@ -1468,6 +1468,13 @@ body {
         gap: 1rem;
     }
 
+    /* Itens do grid precisam de min-width:0 para não estourar a tela no mobile */
+    .player-hero-card,
+    .side-panel,
+    .tab-content {
+        min-width: 0;
+    }
+
     .player-hero-card {
         padding: 1rem 0.75rem;
         border-radius: var(--radius-md);
